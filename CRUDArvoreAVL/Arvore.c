@@ -8,14 +8,15 @@ typedef struct no No;
 struct no
 {
 	int info;
-	char str[63];
-	No * esq;
-	No * dir;
+	int fb; // USADO PARA BALANCEAR A ARVORE
+	Aluno *aluno;
+	No *esq;
+	No *dir;
 };
 
 struct arvore
 {
-	No * raiz;
+	No *raiz;
 };
 
 /*
@@ -37,6 +38,7 @@ void destruir_rec(No *no)
 	{
 		destruir_rec(no->esq);
 		destruir_rec(no->dir);
+        destruirAluno(no->aluno);
 		free(no);
 	}
 }
@@ -91,9 +93,16 @@ int altura(Arvore * arv)
 	return altura_rec(arv->raiz);
 }
 
+int altura_2(Arvore *arv)
+{
+    if(arv->raiz == NULL)
+        return -1;
+    return arv->raiz->altura;
+}
+
 int estaVazia(Arvore *arv)
 {
-	return (arv->raiz != NULL ? 1 : 0 );
+	return (arv->raiz == NULL ? 1 : 0 );
 }
 
 void pre_ordem(No * no) // percorrendo árvore e imprimindo pre_ordem
@@ -185,6 +194,20 @@ int maior_chave_rec(No *no)
 int maior_chave(Arvore *arv)
 {
 	return maior_chave_rec(arv->raiz);
+
+    /* IMPLEMENTAÇÃO ITERATIVA
+
+    if(arv->raiz != NULL)
+    {
+        No *no = arv->raiz;
+
+        while(no->dir != NULL)
+            no = no->dir;
+
+        return no->info;
+    }
+    return -1;
+    */
 }
 
 /*
@@ -231,6 +254,9 @@ INSERÇÃO, REMOÇÃO E BALANCEAMENTO
 ----------------------------------
 */
 
+// DESCOBRI QUE ESSA MÉTODO É EXTREMAMENTE INEFICIENTE.
+// É MELHOR USAR UMA VARIÁVEL EM CADA NÓ PARA CALCULAR O FATOR DE BALANCEAMENTO.
+// PORÉM SÓ EXCLUIREI ELE APÓS IMPLEMENTAR O FATOR DE BALANCEAMENTO.
 No* balancear(No *no)
 {
 	int dir, esq, fb;
@@ -278,103 +304,115 @@ No* balancear(No *no)
 	return no;
 }
 
-No* inserir_rec(No *no, int key, char *str)
+// ESSA FUNÇÃO USAVA A FUNÇÃO "balancear()" E DEVE SER REFEITA
+// O BALANCEAMENTO SERÁ IMPLEMENTADO POSTERIORMENTE
+void inserir_rec(No **no, int key, Aluno *aluno)
 {
-	if (no != NULL)
-	{
-		if (key == no->info)
-		{
-			printf("A chave \"%d\" ja foi adicionada! \n", key);
-			return no;
-		}
+    No *no2 = *no;
 
-		if (key > no->info)
-		{
-			no->dir = inserir_rec(no->dir, key, str);
-			/* balanceando */
-			return balancear(no);
-		}
-		else
-		{
-			no->esq = inserir_rec(no->esq, key, str);
-			/* balanceando */
-			return balancear(no);
-		}
+	if (no2 != NULL)
+	{
+		if (key > no2->info)
+        {
+            inserir_rec(&no2->dir, key, aluno);
+            no2->fb++;
+            if(no2->fb > 2)
+            {
+                if(no2->dir->fb >=0)
+                    rotacao_a_esquerda(no2);
+                else
+                    rotacao_dupla_a_esquerda(no2);
+            }
+        }
+		else if (key < no2->info)
+        {
+            inserir_rec(&no2->esq, key, aluno);
+            no2->fb--;
+
+            if(no2->fb < -2)
+            {
+                if(no2->dir->fb <= 0)
+                    rotacao_a_direita(no2);
+                else
+                    rotacao_dupla_a_direita(no2);
+            }
+        }
+        else
+            printf("A chave \"%d\" ja foi adicionada! \n", key);
 	}
 	else
 	{
-		no = (No*) malloc(sizeof(No));
-		strcpy(no->str, str);
-		no->info = key;
-		no->esq = NULL;
-		no->dir = NULL;
-		return no;
+		no2 = (No*) malloc(sizeof(No));
+		no2->aluno = aluno;
+		no2->info = key;
+		no2->fb = 0;
+		no2->esq = NULL;
+		no2->dir = NULL;
+		*no = no2;
 	}
-	return no;
 }
 
-void inserir(Arvore *arv, int key, char * str)
+void inserir(Arvore *arv, int key, Aluno *aluno)
 {
-	arv->raiz = inserir_rec(arv->raiz, key, str);
+	inserir_rec(&arv->raiz, key, aluno);
 }
 
-/*
-	A função inserir2_rec() considera que a estrutura de no contem dois
-	inteiros a mais que representam a altura da arvore a esquerda e a direita.
-	Ela será modificada posteriormente.
-
-No* inserir2_rec(No *no, int key, char *str)
+No* pegar_maior(No **no)
 {
-	if (no != NULL)
-	{
-		if (key == no->info)
-		{
-			printf("A chave \"%d\" ja foi adicionada! \n", key);
-			return no;
-		}
+    No *no2 = *no;
 
-		if (key > no->info)
-		{
-			no->dir = inserir2_rec(no->dir, key, str);
-			no->altdir++;
-			// balanceando
-			return balancear(no);
-		}
-		else
-		{
-			no->esq = inserir2_rec(no->esq, key, str);
-			no->altesq++;
-			// balanceando
-			return balancear(no);
-		}
-	}
-	else
-	{
-		no = (No*)malloc(sizeof(No));
-		strcpy_s(no->str, sizeof no->str, str);
-		no->info = key;
-		no->esq = NULL;
-		no->dir = NULL;
-		no->altesq = 0;
-		no->altdir = 0;
-		return no;
-	}
-	return no;
+    if (no2->dir != NULL)
+        return pegar_maior(&raiz->dir);
+
+    *no = no2->esq;
+
+    return no2;
 }
 
-void inserir2(Arvore *arv, int key, char *str)
+// NÃO MANTEM A ARVORE BALANCEADA, MAS É O QUE TENHO POR ENQUANTO.
+// IMPLEMENTAREI O BALANCEAMENTO POSTERIORMENTE.
+void remover_rec(No **no, int valor)
 {
-	arv->raiz = inserir2_rec(arv->raiz, key, str);
-}*/
-
-void remover_rec(No *no, int valor)
-{
-
+    No *no2 = *no;
+    if (no2 != NULL)
+    {
+        if (valor > no2->info)
+        {
+            remover_rec(no2->dir);
+            no2->alturaDireita--;
+        }
+        else if (valor < no2->info)
+        {
+            remover_rec(no2->esq);
+            no2->alturaEsquerda--;
+        }
+        else // (valor == no2->info)
+        {
+            if (no2->dir == NULL && no2->esq == NULL)
+            {
+                destruirAluno(no2->aluno);
+                free(no2);
+            }
+            else if (no->dir != NULL && no->esq != NULL)
+            {
+                *no = pegar_maior(&no2->esq);
+                no2->esq = *no;
+            }
+            else if (no->esq == NULL)
+            {
+                ;
+            }
+            else // (no->dir == NULL)
+            {
+                ;
+            }
+        }
+    }
 }
 
 void remover(Arvore *arv, int valor)
 {
-	remover_rec(arv->raiz, valor);
+	remover_rec(&arv->raiz, valor);
 }
 
 char* buscar_rec(No *no, int key)
@@ -394,4 +432,15 @@ char* buscar_rec(No *no, int key)
 char* buscar(Arvore *arv, int key)
 {
 	return buscar_rec(arv->raiz, key);
+
+    // OPERAÇÃO NÃO RECURSIVA
+/*
+	No *raiz = arv->raiz;
+
+	while (raiz != NULL || raiz->info != key)
+        raiz = (key > raiz->info ? raiz->dir : raiz->esq);
+
+    return (raiz != NULL ? "\0" : raiz->str);
+*/
+
 }

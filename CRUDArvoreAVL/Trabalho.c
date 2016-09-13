@@ -36,11 +36,11 @@ int menu(Arvore *arv)
 	{
 		case 1:
 			printf("\tselecionou opcao 1 \n");
-			//cadastrar_aluno(arv);
+			cadastrar_aluno(arv);
 			break;
 		case 2:
 			printf("\tselecionou opcao 2 \n");
-			//excluir_aluno(arv);
+			excluir_aluno(arv);
 			break;
 		case 3:
 			printf("\tselecionou opcao 3 \n");
@@ -51,42 +51,28 @@ int menu(Arvore *arv)
 			scanf("%d", &matricula);
 			fflush(stdin);
 
-			while (matricula < 1 || matricula > 9999999)
+			while (matricula < 1)
 			{
 				printf("\tInsira uma matricula valida: ");
 				scanf("%d", &matricula);
 				fflush(stdin);
 			}
 
-			//aluno = pesquisar_aluno(arv, matricula);
+			aluno = pesquisar_aluno(arv, matricula);
 
 			break;
 		case 4:
 			printf("\tselecionou opcao 4 \n");
-			//salvar_e_sair(arv);
-			break;
+			salvar_e_sair(arv);
+			return 0;
 		case 5:
 			printf("\tselecionou opcao 5 \n");
 			return 0;
-			break;
 		default:
 			printf("\tERRO NA ESTRUTURA DE SWITCH DO MENU");
 			break;
 	}
 	return 1;
-}
-
-// OK
-int recuperar_chave(char *str) // está pegando a matricula no inicio da linha, porem esse campo será do nome
-{
-	int i;
-	char s[100];
-
-	for (i = 0; str[i] != ' '; i++)
-		s[i] = str[i];
-	s[i] = '\n';
-
-	return atoi(s);
 }
 
 // OK
@@ -176,7 +162,22 @@ char* pesquisar_aluno(Arvore *arv, int key)
 
 void excluir_aluno(Arvore *arv)
 {
+    int matricula;
 
+    printf("\tMatricula: \n\t");
+    printf(">> ");
+    scanf("%d", &opcao);
+	fflush(stdin);
+
+	while (opcao > 5 || opcao < 1)
+	{
+		printf("\tSelecione uma opcao valida! \n\t");
+		printf(">> ");
+		scanf("%d", &opcao);
+		fflush(stdin);
+	}
+
+    remover(arv, matricula);
 }
 
 void listar_alunos(Arvore *arv)
