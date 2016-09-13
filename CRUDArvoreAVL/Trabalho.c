@@ -3,6 +3,7 @@
 #include <string.h>
 #include "Trabalho.h"
 #include "Arvore.h"
+#include "Aluno.h"
 
 // OK
 int menu(Arvore *arv)
@@ -36,7 +37,7 @@ int menu(Arvore *arv)
 	{
 		case 1:
 			printf("\tselecionou opcao 1 \n");
-			cadastrar_aluno(arv);
+			//cadastrar_aluno(arv);
 			break;
 		case 2:
 			printf("\tselecionou opcao 2 \n");
@@ -63,7 +64,7 @@ int menu(Arvore *arv)
 			break;
 		case 4:
 			printf("\tselecionou opcao 4 \n");
-			salvar_e_sair(arv);
+			salvar(arv);
 			return 0;
 		case 5:
 			printf("\tselecionou opcao 5 \n");
@@ -93,13 +94,13 @@ char** recuperar_dados(char *str)
 	telefone =	(char *) malloc(10 * sizeof(char));
 
 	// recupera o nome
-	for (i = 0, j = 0; str[i] != ' '; i++, j++)
+	for (i = 0, j = 0; str[i] != '|'; i++, j++)
 		nome[j] = str[i];
-	nome[j] = '\0';
+	nome[--j] = '\0';
 	dados[0] = nome;
 
 	// recupera a matricula
-	for (i += 14, j = 0; str[i] != ' '; i++, j++)
+	for (i += 13, j = 0; str[i] != ' '; i++, j++)
 		matricula[j] = str[i];
 	matricula[j] = '\0';
 	dados[1] = matricula;
@@ -123,41 +124,48 @@ char** recuperar_dados(char *str)
 // carrega os dados do arquivo na arvore (em memória)
 void carregar_arvore(Arvore *arv)
 {
-	FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\TreeProject\\DB\\BDAlunos10e1v4.txt", "r");
+	FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Arquivos\\BDAlunos10e1v1.txt", "r");
 	char str[1000]; // "str" receberá cada linha do arquivo e será fragmentada para um array de strings.
 	char **dados; // "dados" guardará o array de strings da fragmentação de "str"
 	int key, i;
+	Aluno *aluno;
 
 	while (fgets(str, sizeof str, fp) != NULL)
 	{
-		dados = recuperar_dados(str);
+		dados = recuperar_dados(str); // NOME, MATRICULA, E-MAIL, TELEFONE
+
+		aluno = criarAluno();
+        setNomeAluno(aluno, dados[0]);
+        setMatriculaAluno(aluno, dados[1]);
+        setEmailAluno(aluno, dados[2]);
+        setTelefoneAluno(aluno, dados[3]);
 
 		// segundo parametro transforma a string de matricula para inteiro e usa como chave da arvore
-		inserir(arv, atoi(dados[1]), str);
+		inserir(arv, atoi(dados[1]), aluno);
 
 		// imprimindo os dados recebidos (só para testar se está tudo ok)
 		printf("%s %s %s %s \n", dados[0], dados[1], dados[2], dados[3]);
-
-		// limpando as informações já inseridas na arvore
-		for (i = 0; i < 4; i++)
-			free(dados[i]);
-		free(dados);
 	}
+
+    // limpando as informações já inseridas na arvore
+    for (i = 0; i < 4; i++)
+        free(dados[i]);
+    free(dados);
 
 	fclose(fp);
 }
 
 //OK
-char* pesquisar_aluno(Arvore *arv, int key)
+Aluno* pesquisar_aluno(Arvore *arv, int key)
 {
-	char *str;
+	Aluno *aluno;
 
-	str = buscar(arv, key);
+	aluno = buscar(arv, key);
 
 	//printf("strlen(str): %d \n", strlen(str));
 	//printf("str: %s", str);
 
-	return (strlen(str) == 0 ? "Aluno nao encontrado! \n\0" : str);
+	return (aluno != NULL ? aluno : NULL);
 }
 
 void excluir_aluno(Arvore *arv)
@@ -166,14 +174,14 @@ void excluir_aluno(Arvore *arv)
 
     printf("\tMatricula: \n\t");
     printf(">> ");
-    scanf("%d", &opcao);
+    scanf("%d", &matricula);
 	fflush(stdin);
 
-	while (opcao > 5 || opcao < 1)
+	while (matricula < 1)
 	{
-		printf("\tSelecione uma opcao valida! \n\t");
+		printf("\tSelecione uma matricula valida! \n\t");
 		printf(">> ");
-		scanf("%d", &opcao);
+		scanf("%d", &matricula);
 		fflush(stdin);
 	}
 
@@ -182,19 +190,28 @@ void excluir_aluno(Arvore *arv)
 
 void listar_alunos(Arvore *arv)
 {
-    FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\TreeProject\\DB\\PesqAlunos10e1.txt", "r");
-	char str[20]; // "str" receberá cada linha do arquivo.
+    FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Arquivos\\PesqAlunos10e1.txt", "r");
+	char str[10]; // "str" receberá cada linha do arquivo.
     int matricula; // "matricula" receberá o valor de "str" em formato inteiro.
+    Aluno *aluno;
 
     printf("\n \t\tNome \t\tMatricula \t  E-mail \t  Telefone \n\n");
 
     while (fgets(str, sizeof str, fp) != NULL)
 	{
 		matricula = atoi(str);
-		printf("Mat.: %d - ", matricula);
-        printf("%s", pesquisar_aluno(arv, matricula));
+
+		aluno = pesquisar_aluno(arv, matricula);
+
+        printf("Mat.: %d - ", matricula);
+
+		if(aluno != NULL)
+            printf("%s %s %s %s \n", getMatriculaAluno(aluno), getNomeAluno(aluno), getEmailAluno(aluno), getTelefoneAluno(aluno));
+        else
+            printf("Não encontrado!");
 	}
 }
+
 /*
 void cadastrar_aluno(Arvore *arv)
 {
@@ -237,30 +254,61 @@ void cadastrar_aluno(Arvore *arv)
 	printf("Aluno Cadastrado! \n");
 }
 
-/*
+}
+*/
+
+char* toString(Aluno* aluno)
+{
+    if (aluno == NULL)
+        return NULL;
+
+    char *str = (char*) malloc(128 * sizeof(char));
+    char **dados;
+
+    // FORMATO PARA SER GUARDADO: "0000001 | Aluno mat. 0000001 | 0000001@ffb.edu.br | 9000.0001"
+
+    dados = getDadosAluno(aluno);
+
+    strcpy(str, dados[0]); // NOME
+    strcpy(str, dados[1]); // MATRICULA
+    strcpy(str, " | Aluno mat. ");
+    strcpy(str, dados[2]); // EMAIL
+    strcpy(str, " | ");
+    strcpy(str, dados[3]); // TELEFONE
+    strcpy(str, "\n\0");
+
+    free(dados[0]);
+    free(dados[1]);
+    free(dados[2]);
+    free(dados[3]);
+
+    return str;
+}
+
 void salvar(Arvore *arv)
 {
 	FILE *fp = fopen("C:\\Users\\Eron\\Desktop\\Trabalho\\BDAlunos10e1v1.txt", "w");
-	char *str; // 63 é o tamanho da linha do arquivo incluindo \n e \0
-	int key, i, qtd_nos;
-	qtd_nos = contar_nos(arv);
+	char *str;
+	int key, max_key;
+	Aluno *aluno;
 
-	while (fp != NULL)
+	max_key = maior_chave(arv);
+
+    // ESTE FOR NÃO É EFICIENTE SE A DIFERENÇA DE VALORES DE CHAVE FOR MUITO GRANDE.
+	for (key = menor_chave(arv); key <= max_key; key++)
 	{
-		for (i = 0; i < qtd_nos; i++)
-		{
-			str = pesquisar(arv, i);
-			fputs(str, sizeof str, fp);
-		}
-
-		key = recuperar_chave(str);
-		inserir(arv, key, str);
+	    aluno = pesquisar_aluno(arv, key);
+	    str = toString(aluno);
+	    if (str != NULL)
+        {
+            // ESCREVE NO ARQUIVO!
+        }
 	}
 
 	fclose(fp);
-}*/
+}
 
-void sair_sem_salvar()
+void sair()
 {
 
 }

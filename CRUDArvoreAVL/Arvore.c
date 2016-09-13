@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Arvore.h"
+#include "Aluno.h"
 
 typedef struct no No;
 
@@ -25,7 +26,7 @@ struct arvore
 ----------------------------
 */
 
-Arvore * criar()
+Arvore* criar()
 {
 	Arvore * arv = (Arvore*) malloc(sizeof(Arvore));
 	arv->raiz = NULL;
@@ -43,25 +44,25 @@ void destruir_rec(No *no)
 	}
 }
 
-void destruir(Arvore * arv)
+void destruir(Arvore *arv)
 {
 	destruir_rec(arv->raiz);
 	free(arv);
 }
 
-int contar_nos_rec(No * no)
+int contar_nos_rec(No *no)
 {
 	if (no != NULL)
 		return contar_nos_rec(no->esq) + contar_nos_rec(no->dir) + 1;
 	return 0;
 }
 
-int contar_nos(Arvore * arv)
+int contar_nos(Arvore *arv)
 {
 	return contar_nos_rec(arv->raiz);
 }
 
-int contar_folhas_rec(No * no)
+int contar_folhas_rec(No *no)
 {
 	if (no != NULL)
 	{
@@ -72,12 +73,12 @@ int contar_folhas_rec(No * no)
 	return 0;
 }
 
-int contar_folhas(Arvore * arv)
+int contar_folhas(Arvore *arv)
 {
 	return contar_folhas_rec(arv->raiz);
 }
 
-int altura_rec(No * no)
+int altura_rec(No *no)
 {
 	if (no != NULL)
 	{
@@ -88,16 +89,9 @@ int altura_rec(No * no)
 	return -1;
 }
 
-int altura(Arvore * arv)
+int altura(Arvore *arv)
 {
 	return altura_rec(arv->raiz);
-}
-
-int altura_2(Arvore *arv)
-{
-    if(arv->raiz == NULL)
-        return -1;
-    return arv->raiz->altura;
 }
 
 int estaVazia(Arvore *arv)
@@ -105,7 +99,7 @@ int estaVazia(Arvore *arv)
 	return (arv->raiz == NULL ? 1 : 0 );
 }
 
-void pre_ordem(No * no) // percorrendo árvore e imprimindo pre_ordem
+void pre_ordem(No *no) // percorrendo árvore e imprimindo pre_ordem
 {
 	if (no != NULL)
 	{
@@ -115,7 +109,7 @@ void pre_ordem(No * no) // percorrendo árvore e imprimindo pre_ordem
 	}
 }
 
-void in_ordem(No * no) // percorrendo árvore e imprimindo in_ordem
+void in_ordem(No *no) // percorrendo árvore e imprimindo in_ordem
 {
 	if (no != NULL)
 	{
@@ -125,7 +119,7 @@ void in_ordem(No * no) // percorrendo árvore e imprimindo in_ordem
 	}
 }
 
-void pos_ordem(No * no) // percorrendo árvore e imprimindo pos_ordem
+void pos_ordem(No *no) // percorrendo árvore e imprimindo pos_ordem
 {
 	if (no != NULL)
 	{
@@ -135,52 +129,73 @@ void pos_ordem(No * no) // percorrendo árvore e imprimindo pos_ordem
 	}
 }
 
-void imprimir_in_ordem_rec(No * no) // percorrendo árvore e imprimindo os dados in_ordem
+void imprimir_in_ordem_rec(No *no) // percorrendo árvore e imprimindo os dados in_ordem
 {
 	if (no != NULL)
 	{
+	    char **dados;
 		imprimir_in_ordem_rec(no->esq);
-		printf("%s \n", no->str);
+		dados = getDadosAluno(no->aluno);
+		printf("%s  %s %s  %s \n", dados[0], dados[1], dados[2], dados[3]);
 		imprimir_in_ordem_rec(no->dir);
 	}
 }
 
-void imprimir_in_ordem(Arvore * arv)
+void imprimir_in_ordem(Arvore *arv)
 {
 	imprimir_in_ordem_rec(arv->raiz);
 	printf("\n");
 }
 
-void imprimir_pre_ordem_rec(No * no) // percorrendo árvore e imprimindo os dados pre_ordem
+void imprimir_pre_ordem_rec(No *no) // percorrendo árvore e imprimindo os dados pre_ordem
 {
 	if (no != NULL)
 	{
-		printf("%s \n", no->str);
-		imprimir_pre_ordem_rec(no->esq);
-		imprimir_pre_ordem_rec(no->dir);
+	    char **dados;
+		dados = getDadosAluno(no->aluno);
+		printf("%s  %s %s  %s \n", dados[0], dados[1], dados[2], dados[3]);
+		imprimir_in_ordem_rec(no->esq);
+		imprimir_in_ordem_rec(no->dir);
 	}
 }
 
-void imprimir_pre_ordem(Arvore * arv)
+void imprimir_pre_ordem(Arvore *arv)
 {
 	pre_ordem(arv->raiz);
 	printf("\n");
 }
 
-void imprimir_pos_ordem_rec(No * no) // percorrendo árvore e imprimindo os dados pos_ordem
+void imprimir_pos_ordem_rec(No *no) // percorrendo árvore e imprimindo os dados pos_ordem
 {
 	if (no != NULL)
 	{
-		imprimir_pos_ordem_rec(no->esq);
-		imprimir_pos_ordem_rec(no->dir);
-		printf("%s \n", no->str);
+		char **dados;
+		imprimir_in_ordem_rec(no->esq);
+		imprimir_in_ordem_rec(no->dir);
+		dados = getDadosAluno(no->aluno);
+		printf("%s  %s %s  %s \n", dados[0], dados[1], dados[2], dados[3]);
 	}
 }
 
-void imprimir_pos_ordem(Arvore * arv)
+void imprimir_pos_ordem(Arvore *arv)
 {
 	pos_ordem(arv->raiz);
 	printf("\n");
+}
+
+int menor_chave_rec(No *no)
+{
+    if (no->esq != NULL)
+		return maior_chave(no->esq);
+	else
+		return no->info;
+}
+
+int menor_chave(Arvore *arv)
+{
+    if (arv->raiz != NULL)
+        return menor_chave_rec(arv->raiz);
+    return -1;
 }
 
 int maior_chave_rec(No *no)
@@ -193,9 +208,12 @@ int maior_chave_rec(No *no)
 
 int maior_chave(Arvore *arv)
 {
-	return maior_chave_rec(arv->raiz);
+    if (arv->raiz != NULL)
+        return menor_chave_rec(arv->raiz);
+    return -1;
 
-    /* IMPLEMENTAÇÃO ITERATIVA
+    /*
+    IMPLEMENTAÇÃO ITERATIVA
 
     if(arv->raiz != NULL)
     {
@@ -208,6 +226,36 @@ int maior_chave(Arvore *arv)
     }
     return -1;
     */
+}
+
+// BUSCA UM ALUNO NA ARVORE ATRAVÉS DA MATRICULA (KEY)
+Aluno* buscar_rec(No *no, int key)
+{
+	if (no != NULL)
+	{
+		if (no->info == key)
+			return no->aluno;
+		if (key > no->info)
+			return buscar_rec(no->dir, key);
+		else
+			return buscar_rec(no->esq, key);
+	}
+	return NULL;
+}
+
+Aluno* buscar(Arvore *arv, int key)
+{
+	return buscar_rec(arv->raiz, key);
+
+    // OPERAÇÃO NÃO RECURSIVA
+/*
+	No *raiz = arv->raiz;
+
+	while (raiz != NULL || raiz->info != key)
+        raiz = (key > raiz->info ? raiz->dir : raiz->esq);
+
+    return (raiz != NULL ? raiz->aluno : NULL);
+*/
 }
 
 /*
@@ -223,6 +271,9 @@ No* rotacao_a_esquerda(No *no)
 	no->dir = aux->esq;
 	aux->esq = no;
 
+    no->fb--;
+    aux->fb--;
+
 	return aux;
 }
 
@@ -232,6 +283,9 @@ No* rotacao_a_direita(No *no)
 
 	no->esq = aux->dir;
 	aux->dir = no;
+
+    no->fb++;
+    aux->fb++;
 
 	return aux;
 }
@@ -250,59 +304,9 @@ No* rotacao_dupla_a_direita(No *no)
 
 /*
 ----------------------------------
-INSERÇÃO, REMOÇÃO E BALANCEAMENTO
+--------INSERÇÃO E REMOÇÃO--------
 ----------------------------------
 */
-
-// DESCOBRI QUE ESSA MÉTODO É EXTREMAMENTE INEFICIENTE.
-// É MELHOR USAR UMA VARIÁVEL EM CADA NÓ PARA CALCULAR O FATOR DE BALANCEAMENTO.
-// PORÉM SÓ EXCLUIREI ELE APÓS IMPLEMENTAR O FATOR DE BALANCEAMENTO.
-No* balancear(No *no)
-{
-	int dir, esq, fb;
-
-	dir = altura_rec(no->dir)+1;
-	esq = altura_rec(no->esq)+1;
-	/*
-	esq = (esq == -1 ? 0 : esq);
-	dir = (dir == -1 ? 0 : dir);
-	*/
-	fb = esq - dir;
-
-	if (fb > 1)
-	{
-		int esq2, dir2, fb2;
-		esq2 = altura_rec(no->esq->esq)+1;
-		dir2 = altura_rec(no->esq->dir)+1;
-		/*
-		esq2 = (esq2 == -1 ? 0 : esq2);
-		dir2 = (dir2 == -1 ? 0 : dir2);
-		*/
-		fb2 = esq2 - dir2;
-
-		if (fb2 >= 0)
-			return rotacao_a_direita(no);
-		else
-			return rotacao_dupla_a_direita(no);
-	}
-	if (fb < -1)
-	{
-		int esq2, dir2, fb2;
-		esq2 = altura_rec(no->dir->esq)+1;
-		dir2 = altura_rec(no->dir->dir)+1;
-		/*
-		esq2 = (esq2 == -1 ? 0 : esq2);
-		dir2 = (dir2 == -1 ? 0 : dir2);
-		*/
-		fb2 = esq2 - dir2;
-
-		if (fb2 <= 0)
-			return rotacao_a_esquerda(no);
-		else
-			return rotacao_dupla_a_esquerda(no);
-	}
-	return no;
-}
 
 // ESSA FUNÇÃO USAVA A FUNÇÃO "balancear()" E DEVE SER REFEITA
 // O BALANCEAMENTO SERÁ IMPLEMENTADO POSTERIORMENTE
@@ -316,9 +320,10 @@ void inserir_rec(No **no, int key, Aluno *aluno)
         {
             inserir_rec(&no2->dir, key, aluno);
             no2->fb++;
-            if(no2->fb > 2)
+
+            if(no2->fb > 1)
             {
-                if(no2->dir->fb >=0)
+                if(no2->dir->fb >= 0)
                     rotacao_a_esquerda(no2);
                 else
                     rotacao_dupla_a_esquerda(no2);
@@ -329,7 +334,7 @@ void inserir_rec(No **no, int key, Aluno *aluno)
             inserir_rec(&no2->esq, key, aluno);
             no2->fb--;
 
-            if(no2->fb < -2)
+            if(no2->fb < -1)
             {
                 if(no2->dir->fb <= 0)
                     rotacao_a_direita(no2);
@@ -357,12 +362,13 @@ void inserir(Arvore *arv, int key, Aluno *aluno)
 	inserir_rec(&arv->raiz, key, aluno);
 }
 
+// FUNÇÃO UTILIZADA EM "remover_rec()".
 No* pegar_maior(No **no)
 {
     No *no2 = *no;
 
     if (no2->dir != NULL)
-        return pegar_maior(&raiz->dir);
+        return pegar_maior(&no2->dir);
 
     *no = no2->esq;
 
@@ -371,76 +377,49 @@ No* pegar_maior(No **no)
 
 // NÃO MANTEM A ARVORE BALANCEADA, MAS É O QUE TENHO POR ENQUANTO.
 // IMPLEMENTAREI O BALANCEAMENTO POSTERIORMENTE.
-void remover_rec(No **no, int valor)
+// OK
+void remover_rec(No **no, int key)
 {
     No *no2 = *no;
+
     if (no2 != NULL)
     {
-        if (valor > no2->info)
+        if (key > no2->info)
         {
-            remover_rec(no2->dir);
-            no2->alturaDireita--;
+            remover_rec(no2->dir, key);
+            no2->fb--;
         }
-        else if (valor < no2->info)
+        else if (key < no2->info)
         {
-            remover_rec(no2->esq);
-            no2->alturaEsquerda--;
+            remover_rec(no2->esq, key);
+            no2->fb++;
         }
-        else // (valor == no2->info)
+        else // (key == no2->info)
         {
             if (no2->dir == NULL && no2->esq == NULL)
             {
                 destruirAluno(no2->aluno);
-                free(no2);
+                *no = NULL;
             }
-            else if (no->dir != NULL && no->esq != NULL)
+            else if (no2->dir != NULL && no2->esq != NULL)
             {
                 *no = pegar_maior(&no2->esq);
-                no2->esq = *no;
+                (*no)->dir = no2->dir;
+                (*no)->esq = no2->esq;
+                destruirAluno(no2->aluno);
             }
-            else if (no->esq == NULL)
-            {
-                ;
-            }
-            else // (no->dir == NULL)
-            {
-                ;
-            }
+            else if (no2->esq == NULL)
+                *no = no2->dir;
+            else // (no2->dir == NULL)
+                *no = no2->esq;
+
+            free(no2);
         }
     }
 }
 
-void remover(Arvore *arv, int valor)
+// OK
+void remover(Arvore *arv, int key)
 {
-	remover_rec(&arv->raiz, valor);
-}
-
-char* buscar_rec(No *no, int key)
-{
-	if (no != NULL)
-	{
-		if (no->info == key)
-			return no->str;
-		if (key > no->info)
-			return buscar_rec(no->dir, key);
-		else
-			return buscar_rec(no->esq, key);
-	}
-	return "\0";
-}
-
-char* buscar(Arvore *arv, int key)
-{
-	return buscar_rec(arv->raiz, key);
-
-    // OPERAÇÃO NÃO RECURSIVA
-/*
-	No *raiz = arv->raiz;
-
-	while (raiz != NULL || raiz->info != key)
-        raiz = (key > raiz->info ? raiz->dir : raiz->esq);
-
-    return (raiz != NULL ? "\0" : raiz->str);
-*/
-
+	remover_rec(&arv->raiz, key);
 }
