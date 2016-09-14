@@ -16,8 +16,6 @@ int main(int argc, char *argv[])
 	carregar_arvore(arv);
 
     printf("Altura: %d \n", altura(arv));
-	//int mat = 100000;
-	//printf("Aluno de matricula %d existe? %s \n", mat, pesquisar_aluno(arv, mat));
 
 	destruir(arv);
 	printf("\tPrograma finalizado! \n\t");

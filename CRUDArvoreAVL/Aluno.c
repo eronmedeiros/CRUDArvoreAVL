@@ -43,9 +43,7 @@ void setMatriculaAluno(Aluno *aluno, char *matricula)
 // OK
 char* getMatriculaAluno(Aluno *aluno)
 {
-    if(aluno != NULL)
-        return aluno->matricula;
-    return NULL;
+    return aluno->matricula;
 }
 
 // OK
@@ -58,9 +56,7 @@ void setNomeAluno(Aluno *aluno, char *nome)
 // OK
 char* getNomeAluno(Aluno *aluno)
 {
-    if(aluno != NULL)
-        return aluno->nome;
-    return NULL;
+    return aluno->nome;
 }
 
 // OK

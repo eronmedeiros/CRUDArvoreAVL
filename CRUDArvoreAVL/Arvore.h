@@ -7,12 +7,12 @@ typedef struct arvore Arvore;
 Arvore* criar();
 void destruir(Arvore * arv);
 
-void inserir(Arvore *arv, int key, Aluno *aluno);
+int inserir(Arvore *arv, int key, Aluno *aluno); // 1 = OK; 0 = FAIL;
 void remover(Arvore *arv, int key);
-Aluno* buscar(Arvore *arv, int key);
+Aluno* buscar(Arvore *arv, int key); // se aluno não existir, return NULL;
 
-int menor_chave(Arvore *arv);
-int maior_chave(Arvore *arv);
+int menor_chave(Arvore *arv); // se não existir, return -1;
+int maior_chave(Arvore *arv); // se não existir, return -1;
 int contar_nos(Arvore * arv);
 int contar_folhas(Arvore * arv);
 int altura(Arvore * arv);

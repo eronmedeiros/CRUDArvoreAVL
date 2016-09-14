@@ -124,10 +124,10 @@ char** recuperar_dados(char *str)
 // carrega os dados do arquivo na arvore (em memória)
 void carregar_arvore(Arvore *arv)
 {
-	FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Arquivos\\BDAlunos10e1v1.txt", "r");
+	FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Trabalho\\BDAlunos10e1v1.txt", "r");
 	char str[1000]; // "str" receberá cada linha do arquivo e será fragmentada para um array de strings.
 	char **dados; // "dados" guardará o array de strings da fragmentação de "str"
-	int key, i;
+	int key, i = 0;
 	Aluno *aluno;
 
 	while (fgets(str, sizeof str, fp) != NULL)
@@ -142,9 +142,11 @@ void carregar_arvore(Arvore *arv)
 
 		// segundo parametro transforma a string de matricula para inteiro e usa como chave da arvore
 		inserir(arv, atoi(dados[1]), aluno);
+		if(!(i++ % 2))
+            printf("%d \n", i);
 
 		// imprimindo os dados recebidos (só para testar se está tudo ok)
-		printf("%s %s %s %s \n", dados[0], dados[1], dados[2], dados[3]);
+		//printf("%s %s %s %s \n", dados[0], dados[1], dados[2], dados[3]);
 	}
 
     // limpando as informações já inseridas na arvore
@@ -190,7 +192,7 @@ void excluir_aluno(Arvore *arv)
 
 void listar_alunos(Arvore *arv)
 {
-    FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Arquivos\\PesqAlunos10e1.txt", "r");
+    FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Trabalho\\PesqAlunos10e1.txt", "r");
 	char str[10]; // "str" receberá cada linha do arquivo.
     int matricula; // "matricula" receberá o valor de "str" em formato inteiro.
     Aluno *aluno;
@@ -212,52 +214,65 @@ void listar_alunos(Arvore *arv)
 	}
 }
 
-/*
-void cadastrar_aluno(Arvore *arv)
+char* intToString(int matricula)
 {
-	char *dados;
-	char *nome = (char*)malloc(50 * sizeof(char));
-	char *telefone = (char*)malloc(10 * sizeof(char));
-	char *email = (char*)malloc(18 * sizeof(char));
-	int matricula = maior_chave(arv);
+    int i;
+    char *str1 = (char *) malloc(7 * sizeof(char));
+    char str2[7];
+
+    str1[0] = '\0';
+    sprintf(str2, "%d", matricula);
+
+    for (i = 0; i < 7 - strlen(str2); i++)
+        strcat(str1, "0");
+    strcat(str1, str2);
+
+    free(str2);
+    printf("String: %s \n", str1);
+
+    return str1;
+}
+
+// OK
+int cadastrar_aluno(Arvore *arv)
+{
+    int matricula = maior_chave(arv);
+	char *nome = (char*) malloc(50 * sizeof(char));
+	char *telefone = (char*) malloc(10 * sizeof(char));
+	char *email = (char*) malloc(20 * sizeof(char));
+	char *str = intToString(matricula);
+	char *dados = (char*) malloc(256 * sizeof(char));
+	dados[0] = '\0';
+
+	// DEVERIAM HAVER REGRAS PARA CRIAÇÃO DE NOME, EMAIL E TELEFONE,
+	// PORÉM COMO NÃO É O INTUITO DO TRABALHO, NÃO CRIEI ESSAS REGRAS.
 
 	printf("Nome: ");
-	scanf_s("%s", nome);
+	scanf("%s", nome);
+    fflush(stdin);
 
 	printf("E-mail: ");
-	scanf_s("%s", email);
+	scanf("%s", email);
+    fflush(stdin);
 
 	printf("Telefone: ");
-	scanf_s("%s", telefone);
-
+	scanf("%s", telefone);
+    fflush(stdin);
 
 	dados = strcat(dados, nome);
 	dados = strcat(dados, " | Aluno mat. ");
-	//dados = strcat(dados, intToString(matricula));
+	dados = strcat(dados, str);
 	dados = strcat(dados, " | ");
 	dados = strcat(dados, email);
 	dados = strcat(dados, " | ");
 	dados = strcat(dados, telefone);
 	dados = strcat(dados, "\n\0");
 
-	//dados = (char*)malloc(63 * sizeof(char))
-
-	printf("Digite os dados do aluno (ex: \"1510522 | Aluno mat. 1510522 | 1510522@ffb.edu.br | 9151.0522\")");
-	scanf_s("%s", dados);
-
-
-	printf("Digite os dados do aluno (ex: \"1510522 | Aluno mat. 1510522 | 1510522@ffb.edu.br | 9151.0522\")");
-	scanf_s("%s", dados);
-
-	matricula = recuperar_chave(dados);
-	inserir(arv, matricula, dados);
-	printf("Aluno Cadastrado! \n");
+	return inserir(arv, matricula, dados);
 }
 
-}
-*/
-
-char* toString(Aluno* aluno)
+// OK
+char* alunoToString(Aluno* aluno)
 {
     if (aluno == NULL)
         return NULL;
@@ -298,7 +313,7 @@ void salvar(Arvore *arv)
 	for (key = menor_chave(arv); key <= max_key; key++)
 	{
 	    aluno = pesquisar_aluno(arv, key);
-	    str = toString(aluno);
+	    str = alunoToString(aluno);
 	    if (str != NULL)
         {
             // ESCREVE NO ARQUIVO!

@@ -18,6 +18,6 @@ char* getEmailAluno(Aluno *aluno);
 void setTelefone(Aluno *aluno, char *telefone);
 char* getTelefoneAluno(Aluno *aluno);
 
-char** getDados(Aluno *aluno);
+char** getDadosAluno(Aluno *aluno);
 
 #endif // ALUNO_H

@@ -187,8 +187,7 @@ int menor_chave_rec(No *no)
 {
     if (no->esq != NULL)
 		return maior_chave(no->esq);
-	else
-		return no->info;
+    return no->info;
 }
 
 int menor_chave(Arvore *arv)
@@ -202,8 +201,7 @@ int maior_chave_rec(No *no)
 {
 	if (no->dir != NULL)
 		return maior_chave(no->dir);
-	else
-		return no->info;
+    return no->info;
 }
 
 int maior_chave(Arvore *arv)
@@ -289,17 +287,52 @@ No* rotacao_a_direita(No *no)
 
 	return aux;
 }
-
+// PRECISO AJUSTAR O BALANCEAMENTO DAS ROTA합ES. AINDA N홒 EST� FUNCIONANDO.
 No* rotacao_dupla_a_esquerda(No *no)
 {
-	no->dir = rotacao_a_direita(no->dir);
-	return rotacao_a_esquerda(no);
+	//no->dir = rotacao_a_direita(no->dir);
+	//return rotacao_a_esquerda(no);
+
+    No *aux = no->dir;
+	no->esq = rotacao_a_esquerda(no->dir);
+    no = rotacao_a_direita(no);
+
+    if (no->dir->esq == NULL)
+    {
+        no->fb = 0;
+        no->esq->fb = 1;
+        no->dir->fb = 0;
+    }
+    else
+    {
+        no->fb = 0;
+        no->esq->fb = -1;
+        no->dir->fb = 0;
+    }
+
+	return no;
 }
 
 No* rotacao_dupla_a_direita(No *no)
 {
+    No *aux = no->esq;
 	no->dir = rotacao_a_esquerda(no->esq);
-	return rotacao_a_direita(no);
+    no = rotacao_a_direita(no);
+
+    if (no->esq->dir == NULL)
+    {
+        no->fb = 0;
+        no->dir->fb = -1;
+        no->esq->fb = 0;
+    }
+    else
+    {
+        no->fb = 0;
+        no->dir->fb = 1;
+        no->esq->fb = 0;
+    }
+
+	return no;
 }
 
 /*
@@ -310,40 +343,52 @@ No* rotacao_dupla_a_direita(No *no)
 
 // ESSA FUN플O USAVA A FUN플O "balancear()" E DEVE SER REFEITA
 // O BALANCEAMENTO SER� IMPLEMENTADO POSTERIORMENTE
-void inserir_rec(No **no, int key, Aluno *aluno)
+int inserir_rec(No **no, int key, Aluno *aluno)
 {
     No *no2 = *no;
 
 	if (no2 != NULL)
 	{
+	    int adicionou;
+
 		if (key > no2->info)
         {
-            inserir_rec(&no2->dir, key, aluno);
+            adicionou = inserir_rec(&no2->dir, key, aluno);
+            if(!adicionou)
+                return 0;
+
             no2->fb++;
 
             if(no2->fb > 1)
             {
                 if(no2->dir->fb >= 0)
-                    rotacao_a_esquerda(no2);
+                    no2 = rotacao_a_esquerda(no2);
                 else
-                    rotacao_dupla_a_esquerda(no2);
+                    no2 = rotacao_dupla_a_esquerda(no2);
             }
+
+            return 1;
         }
 		else if (key < no2->info)
         {
-            inserir_rec(&no2->esq, key, aluno);
+            adicionou = inserir_rec(&no2->esq, key, aluno);
+            if (!adicionou)
+                return 0;
+
             no2->fb--;
 
             if(no2->fb < -1)
             {
-                if(no2->dir->fb <= 0)
-                    rotacao_a_direita(no2);
+                if(no2->esq->fb <= 0)
+                    no2 = rotacao_a_direita(no2);
                 else
-                    rotacao_dupla_a_direita(no2);
+                    no2 = rotacao_dupla_a_direita(no2);
             }
+
+            return 1;
         }
         else
-            printf("A chave \"%d\" ja foi adicionada! \n", key);
+            return 0;
 	}
 	else
 	{
@@ -354,12 +399,13 @@ void inserir_rec(No **no, int key, Aluno *aluno)
 		no2->esq = NULL;
 		no2->dir = NULL;
 		*no = no2;
+		return 1;
 	}
 }
 
-void inserir(Arvore *arv, int key, Aluno *aluno)
+int inserir(Arvore *arv, int key, Aluno *aluno)
 {
-	inserir_rec(&arv->raiz, key, aluno);
+	return inserir_rec(&arv->raiz, key, aluno);
 }
 
 // FUN플O UTILIZADA EM "remover_rec()".
