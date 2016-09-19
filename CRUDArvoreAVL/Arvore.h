@@ -1,5 +1,6 @@
 #ifndef ARVORE_H
 #define ARVORE_H
+
 #include "Aluno.h"
 
 typedef struct arvore Arvore;
@@ -8,7 +9,7 @@ Arvore* criar();
 void destruir(Arvore * arv);
 
 int inserir(Arvore *arv, int key, Aluno *aluno); // 1 = OK; 0 = FAIL;
-void remover(Arvore *arv, int key);
+int remover(Arvore *arv, int key);
 Aluno* buscar(Arvore *arv, int key); // se aluno não existir, return NULL;
 
 int menor_chave(Arvore *arv); // se não existir, return -1;

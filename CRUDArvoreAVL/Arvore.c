@@ -9,7 +9,7 @@ typedef struct no No;
 struct no
 {
 	int info;
-	int fb; // USADO PARA BALANCEAR A ARVORE
+	int altura; // USADO PARA BALANCEAR A ARVORE
 	Aluno *aluno;
 	No *esq;
 	No *dir;
@@ -99,7 +99,8 @@ int estaVazia(Arvore *arv)
 	return (arv->raiz == NULL ? 1 : 0 );
 }
 
-void pre_ordem(No *no) // percorrendo árvore e imprimindo pre_ordem
+// percorrendo árvore e imprimindo pre_ordem
+void pre_ordem(No *no)
 {
 	if (no != NULL)
 	{
@@ -109,7 +110,8 @@ void pre_ordem(No *no) // percorrendo árvore e imprimindo pre_ordem
 	}
 }
 
-void in_ordem(No *no) // percorrendo árvore e imprimindo in_ordem
+// percorrendo árvore e imprimindo in_ordem
+void in_ordem(No *no)
 {
 	if (no != NULL)
 	{
@@ -119,7 +121,8 @@ void in_ordem(No *no) // percorrendo árvore e imprimindo in_ordem
 	}
 }
 
-void pos_ordem(No *no) // percorrendo árvore e imprimindo pos_ordem
+// percorrendo árvore e imprimindo pos_ordem
+void pos_ordem(No *no)
 {
 	if (no != NULL)
 	{
@@ -129,7 +132,8 @@ void pos_ordem(No *no) // percorrendo árvore e imprimindo pos_ordem
 	}
 }
 
-void imprimir_in_ordem_rec(No *no) // percorrendo árvore e imprimindo os dados in_ordem
+// IMPRIME OS DADOS DO ALUNO IN ORDEM
+void imprimir_in_ordem_rec(No *no)
 {
 	if (no != NULL)
 	{
@@ -147,7 +151,8 @@ void imprimir_in_ordem(Arvore *arv)
 	printf("\n");
 }
 
-void imprimir_pre_ordem_rec(No *no) // percorrendo árvore e imprimindo os dados pre_ordem
+// IMPRIME OS DADOS DO ALUNO PRÉ ORDEM
+void imprimir_pre_ordem_rec(No *no)
 {
 	if (no != NULL)
 	{
@@ -165,7 +170,8 @@ void imprimir_pre_ordem(Arvore *arv)
 	printf("\n");
 }
 
-void imprimir_pos_ordem_rec(No *no) // percorrendo árvore e imprimindo os dados pos_ordem
+// IMPRIME OS DADOS DO ALUNO PóS ORDEM
+void imprimir_pos_ordem_rec(No *no)
 {
 	if (no != NULL)
 	{
@@ -186,44 +192,57 @@ void imprimir_pos_ordem(Arvore *arv)
 int menor_chave_rec(No *no)
 {
     if (no->esq != NULL)
-		return maior_chave(no->esq);
+		return menor_chave_rec(no->esq);
     return no->info;
 }
 
 int menor_chave(Arvore *arv)
 {
-    if (arv->raiz != NULL)
-        return menor_chave_rec(arv->raiz);
-    return -1;
+	if(arv->raiz != NULL)
+	{
+		No *no = arv->raiz;
+
+		while(no->esq != NULL)
+			no = no->esq;
+
+		return no->info;
+	}
+	return -1;
+
+	/*
+	IMPLEMENTAÇÃO RECURSIVA
+	if (arv->raiz != NULL)
+		return menor_chave_rec(arv->raiz);
+	return -1;
+	*/
 }
 
 int maior_chave_rec(No *no)
 {
 	if (no->dir != NULL)
-		return maior_chave(no->dir);
+		return maior_chave_rec(no->dir);
     return no->info;
 }
 
 int maior_chave(Arvore *arv)
 {
+	if(arv->raiz != NULL)
+	{
+		No *no = arv->raiz;
+
+		while(no->dir != NULL)
+			no = no->dir;
+
+		return no->info;
+	}
+	return -1;
+
+	/*
+	IMPLEMENTAÇÃO RECURSIVA
     if (arv->raiz != NULL)
         return menor_chave_rec(arv->raiz);
     return -1;
-
-    /*
-    IMPLEMENTAÇÃO ITERATIVA
-
-    if(arv->raiz != NULL)
-    {
-        No *no = arv->raiz;
-
-        while(no->dir != NULL)
-            no = no->dir;
-
-        return no->info;
-    }
-    return -1;
-    */
+	*/
 }
 
 // BUSCA UM ALUNO NA ARVORE ATRAVÉS DA MATRICULA (KEY)
@@ -243,17 +262,30 @@ Aluno* buscar_rec(No *no, int key)
 
 Aluno* buscar(Arvore *arv, int key)
 {
+	/*
+	No *no = arv->raiz;
+	for (no = arv->raiz;
+		(no != NULL && no->info != key);
+		(no = (key > no->info ? no->dir : no->esq)) );
+
+	return (no != NULL ? no->aluno : NULL);
+	*/
+
+	//IMPLEMENTADO RECURSIVA
 	return buscar_rec(arv->raiz, key);
+	
+}
 
-    // OPERAÇÃO NÃO RECURSIVA
-/*
-	No *raiz = arv->raiz;
+int alturaNo(No *no)
+{
+	if (no != NULL)
+		return no->altura;
+	return 0;
+}
 
-	while (raiz != NULL || raiz->info != key)
-        raiz = (key > raiz->info ? raiz->dir : raiz->esq);
-
-    return (raiz != NULL ? raiz->aluno : NULL);
-*/
+int altura2(Arvore *arv)
+{
+	return alturaNo(arv->raiz) - 1;
 }
 
 /*
@@ -269,8 +301,8 @@ No* rotacao_a_esquerda(No *no)
 	no->dir = aux->esq;
 	aux->esq = no;
 
-    no->fb--;
-    aux->fb--;
+	no->altura = altura_rec(no) + 1;
+	aux->altura = altura_rec(aux) + 1;
 
 	return aux;
 }
@@ -281,58 +313,23 @@ No* rotacao_a_direita(No *no)
 
 	no->esq = aux->dir;
 	aux->dir = no;
-
-    no->fb++;
-    aux->fb++;
+	
+	no->altura = altura_rec(no) + 1;
+	aux->altura = altura_rec(aux) + 1;
 
 	return aux;
 }
-// PRECISO AJUSTAR O BALANCEAMENTO DAS ROTAÇÕES. AINDA NÃO ESTÁ FUNCIONANDO.
+
 No* rotacao_dupla_a_esquerda(No *no)
 {
-	//no->dir = rotacao_a_direita(no->dir);
-	//return rotacao_a_esquerda(no);
-
-    No *aux = no->dir;
-	no->esq = rotacao_a_esquerda(no->dir);
-    no = rotacao_a_direita(no);
-
-    if (no->dir->esq == NULL)
-    {
-        no->fb = 0;
-        no->esq->fb = 1;
-        no->dir->fb = 0;
-    }
-    else
-    {
-        no->fb = 0;
-        no->esq->fb = -1;
-        no->dir->fb = 0;
-    }
-
-	return no;
+	no->dir = rotacao_a_direita(no->dir);
+	return rotacao_a_esquerda(no);
 }
 
 No* rotacao_dupla_a_direita(No *no)
 {
-    No *aux = no->esq;
-	no->dir = rotacao_a_esquerda(no->esq);
-    no = rotacao_a_direita(no);
-
-    if (no->esq->dir == NULL)
-    {
-        no->fb = 0;
-        no->dir->fb = -1;
-        no->esq->fb = 0;
-    }
-    else
-    {
-        no->fb = 0;
-        no->dir->fb = 1;
-        no->esq->fb = 0;
-    }
-
-	return no;
+	no->esq = rotacao_a_esquerda(no->esq);
+	return rotacao_a_direita(no);
 }
 
 /*
@@ -341,8 +338,7 @@ No* rotacao_dupla_a_direita(No *no)
 ----------------------------------
 */
 
-// ESSA FUNÇÃO USAVA A FUNÇÃO "balancear()" E DEVE SER REFEITA
-// O BALANCEAMENTO SERÁ IMPLEMENTADO POSTERIORMENTE
+// RETORNA 0 CASO O ALUNO JÁ EXISTA NA ARVORE E 1 CASO A INSERÇÃO OCORRA COM SUCESSO.
 int inserir_rec(No **no, int key, Aluno *aluno)
 {
     No *no2 = *no;
@@ -357,16 +353,18 @@ int inserir_rec(No **no, int key, Aluno *aluno)
             if(!adicionou)
                 return 0;
 
-            no2->fb++;
+			no2->altura = ((alturaNo(no2->esq) > alturaNo(no2->dir) ? alturaNo(no2->esq) : alturaNo(no2->dir)) + 1);
 
-            if(no2->fb > 1)
-            {
-                if(no2->dir->fb >= 0)
-                    no2 = rotacao_a_esquerda(no2);
-                else
-                    no2 = rotacao_dupla_a_esquerda(no2);
-            }
+			int fb = alturaNo(no2->dir) - alturaNo(no2->esq);
+			if(fb > 1)
+			{
+				fb = alturaNo(no2->dir->dir) - alturaNo(no2->dir->esq);
 
+				if(fb >= 0)
+					*no = rotacao_a_esquerda(no2);
+				else
+					*no = rotacao_dupla_a_esquerda(no2);
+			}
             return 1;
         }
 		else if (key < no2->info)
@@ -375,32 +373,33 @@ int inserir_rec(No **no, int key, Aluno *aluno)
             if (!adicionou)
                 return 0;
 
-            no2->fb--;
+			no2->altura = ((alturaNo(no2->esq) > alturaNo(no2->dir) ? alturaNo(no2->esq) : alturaNo(no2->dir)) + 1);
 
-            if(no2->fb < -1)
-            {
-                if(no2->esq->fb <= 0)
-                    no2 = rotacao_a_direita(no2);
-                else
-                    no2 = rotacao_dupla_a_direita(no2);
-            }
+			int fb = alturaNo(no2->dir) - alturaNo(no2->esq);
+			if(fb < -1)
+			{
+				fb = alturaNo(no2->esq->dir) - alturaNo(no2->esq->esq);
 
-            return 1;
+				if(fb <= 0)
+					*no = rotacao_a_direita(no2);
+				else
+					*no = rotacao_dupla_a_direita(no2);
+			}
+			return 1;
         }
         else
             return 0;
 	}
-	else
-	{
-		no2 = (No*) malloc(sizeof(No));
-		no2->aluno = aluno;
-		no2->info = key;
-		no2->fb = 0;
-		no2->esq = NULL;
-		no2->dir = NULL;
-		*no = no2;
-		return 1;
-	}
+	
+	no2 = (No*) malloc(sizeof(No));
+	no2->aluno = aluno;
+	no2->info = key;
+	no2->altura = 1;
+	no2->esq = NULL;
+	no2->dir = NULL;
+	*no = no2;
+
+	return 1;
 }
 
 int inserir(Arvore *arv, int key, Aluno *aluno)
@@ -423,22 +422,30 @@ No* pegar_maior(No **no)
 
 // NÃO MANTEM A ARVORE BALANCEADA, MAS É O QUE TENHO POR ENQUANTO.
 // IMPLEMENTAREI O BALANCEAMENTO POSTERIORMENTE.
-// OK
-void remover_rec(No **no, int key)
+// RETORNA 0 CASO NÃO HAJA O QUE REMOVER E 1 SE REMOVEU COM SUCESSO.
+// !OK // AINDA HÁ ALGUM ERRO QUE NÃO ENCONTREI
+int remover_rec(No **no, int key)
 {
     No *no2 = *no;
 
     if (no2 != NULL)
     {
+		int removeu;
+
         if (key > no2->info)
         {
-            remover_rec(no2->dir, key);
-            no2->fb--;
+            removeu = remover_rec(no2->dir, key);
+			if (!removeu)
+				return 0;
+			// PRECISA AJUSTAR A ALTURA NO2
+
         }
         else if (key < no2->info)
         {
-            remover_rec(no2->esq, key);
-            no2->fb++;
+			removeu = remover_rec(no2->esq, key);
+			if (!removeu)
+				return 0;
+			// PRECISA AJUSTAR A ALTURA DO NO2
         }
         else // (key == no2->info)
         {
@@ -461,11 +468,13 @@ void remover_rec(No **no, int key)
 
             free(no2);
         }
+		return 1;
     }
+	return 0;
 }
 
 // OK
-void remover(Arvore *arv, int key)
+int remover(Arvore *arv, int key)
 {
-	remover_rec(&arv->raiz, key);
+	return remover_rec(&arv->raiz, key);
 }

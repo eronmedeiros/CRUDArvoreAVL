@@ -3,6 +3,9 @@
 #include <string.h>
 #include "Aluno.h"
 
+// TODOS AS FUNÇÕES "SET" ALOCARÃO MEMÓRIA E COPIARÃO OS DADOS PASSADOS POR PARÂMETRO PARA O DEVIDO CAMPO DO ALUNO.
+// NENHUMA DAS FUNÇÕES "GET" FARÁ CÓPIA DOS DADOS. ELAS RETORNARÃO PONTEIROS PARA OS PRÓPRIOS DADOS DO ALUNO.
+
 // OK
 struct aluno
 {
@@ -69,9 +72,7 @@ void setEmailAluno(Aluno *aluno, char *email)
 // OK
 char* getEmailAluno(Aluno *aluno)
 {
-    if(aluno != NULL)
-        return aluno->email;
-    return NULL;
+	return aluno->email;
 }
 
 // OK
@@ -84,24 +85,18 @@ void setTelefoneAluno(Aluno *aluno, char *telefone)
 // OK
 char* getTelefoneAluno(Aluno *aluno)
 {
-    if(aluno != NULL)
-        return aluno->telefone;
-    return NULL;
+	return aluno->telefone;
 }
 
 // OK
 char** getDadosAluno(Aluno *aluno)
 {
-    int i;
-    char **dados = malloc(4 * sizeof(char *));
+    char **dados = (char**) malloc(4 * sizeof(char*));
 
-    for (i = 0; i < 4; i++)
-        dados[i] = (char *) malloc(50 * sizeof(char));
-
-    strcpy(dados[0], aluno->matricula);
-    strcpy(dados[1], aluno->nome);
-    strcpy(dados[2], aluno->email);
-    strcpy(dados[3], aluno->telefone);
+    dados[0] = aluno->matricula;
+    dados[1] = aluno->nome;
+    dados[2] = aluno->email;
+    dados[3] = aluno->telefone;
 
     return dados;
 }
