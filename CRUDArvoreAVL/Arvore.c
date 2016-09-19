@@ -159,14 +159,14 @@ void imprimir_pre_ordem_rec(No *no)
 	    char **dados;
 		dados = getDadosAluno(no->aluno);
 		printf("%s  %s %s  %s \n", dados[0], dados[1], dados[2], dados[3]);
-		imprimir_in_ordem_rec(no->esq);
-		imprimir_in_ordem_rec(no->dir);
+		imprimir_pre_ordem_rec(no->esq);
+		imprimir_pre_ordem_rec(no->dir);
 	}
 }
 
 void imprimir_pre_ordem(Arvore *arv)
 {
-	pre_ordem(arv->raiz);
+	imprimir_pre_ordem_rec(arv->raiz);
 	printf("\n");
 }
 
@@ -176,8 +176,10 @@ void imprimir_pos_ordem_rec(No *no)
 	if (no != NULL)
 	{
 		char **dados;
-		imprimir_in_ordem_rec(no->esq);
-		imprimir_in_ordem_rec(no->dir);
+
+		imprimir_pos_ordem_rec(no->esq);
+		imprimir_pos_ordem_rec(no->dir);
+
 		dados = getDadosAluno(no->aluno);
 		printf("%s  %s %s  %s \n", dados[0], dados[1], dados[2], dados[3]);
 	}
@@ -185,7 +187,7 @@ void imprimir_pos_ordem_rec(No *no)
 
 void imprimir_pos_ordem(Arvore *arv)
 {
-	pos_ordem(arv->raiz);
+	imprimir_pos_ordem_rec(arv->raiz);
 	printf("\n");
 }
 
@@ -254,8 +256,7 @@ Aluno* buscar_rec(No *no, int key)
 			return no->aluno;
 		if (key > no->info)
 			return buscar_rec(no->dir, key);
-		else
-			return buscar_rec(no->esq, key);
+        return buscar_rec(no->esq, key);
 	}
 	return NULL;
 }
@@ -273,7 +274,7 @@ Aluno* buscar(Arvore *arv, int key)
 
 	//IMPLEMENTADO RECURSIVA
 	return buscar_rec(arv->raiz, key);
-	
+
 }
 
 int alturaNo(No *no)
@@ -313,7 +314,7 @@ No* rotacao_a_direita(No *no)
 
 	no->esq = aux->dir;
 	aux->dir = no;
-	
+
 	no->altura = altura_rec(no) + 1;
 	aux->altura = altura_rec(aux) + 1;
 
@@ -390,7 +391,7 @@ int inserir_rec(No **no, int key, Aluno *aluno)
         else
             return 0;
 	}
-	
+
 	no2 = (No*) malloc(sizeof(No));
 	no2->aluno = aluno;
 	no2->info = key;

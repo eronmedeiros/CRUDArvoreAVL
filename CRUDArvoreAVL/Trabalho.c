@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <conio.h>
 #include "Aluno.h"
 #include "Arvore.h"
 #include "Trabalho.h"
@@ -137,7 +138,7 @@ char** recuperar_dados(char *str)
 // OK // carrega os dados do arquivo na arvore (em memória)
 void carregar_arvore(Arvore *arv)
 {
-	FILE *fp = fopen("C:\\Users\\Eron\\Desktop\\CRUDArvoreAVL\\Trabalho\\BDAlunos10e5v1.txt", "r");
+	FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Trabalho\\BDAlunos10e6v1.txt", "r");
 	char str[1000]; // "str" receberá cada linha do arquivo e será fragmentada para um array de strings.
 	char **dados; // "dados" guardará o array de strings da fragmentação de "str"
 	int i = 0;
@@ -208,7 +209,7 @@ void excluir_aluno(Arvore *arv)
 // OK
 void listar_alunos(Arvore *arv)
 {
-    FILE *fp = fopen("C:\\Users\\Eron\\Desktop\\CRUDArvoreAVL\\Trabalho\\PesqAlunos10e1.txt", "r");
+    FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Trabalho\\PesqAlunos10e1.txt", "r");
 	char str[20]; // "str" receberá cada linha do arquivo.
     int matricula; // "matricula" receberá o valor de "str" em formato inteiro.
     Aluno *aluno;
@@ -290,7 +291,7 @@ void cadastrar_aluno(Arvore *arv)
 		return;
 	}
 	printf("\tAluno %s cadastrado com sucesso! \n", nome); // ALUNO INCLUIDO COM SUCESSO.
-	getch(); 
+	getch();
 	fflush(stdin);
 }
 

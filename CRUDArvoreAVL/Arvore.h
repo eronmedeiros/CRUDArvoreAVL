@@ -17,6 +17,7 @@ int maior_chave(Arvore *arv); // se não existir, return -1;
 int contar_nos(Arvore * arv);
 int contar_folhas(Arvore * arv);
 int altura(Arvore * arv);
+int altura2(Arvore * arv);
 int estaVazia(Arvore *arv);
 
 void imprimir_pre_ordem(Arvore *arv);
