@@ -159,7 +159,11 @@ void imprimir_in_ordem_rec(No *no)
 
 void imprimir_in_ordem(Arvore *arv)
 {
-	imprimir_in_ordem_rec(arv->raiz);
+	if(arv->raiz == NULL)
+		printf("Carregue sua arvore na base de dados antes de qualquer visualizacao!\n");
+	else
+		imprimir_in_ordem_rec(arv->raiz);
+	
 	printf("\n");
 }
 

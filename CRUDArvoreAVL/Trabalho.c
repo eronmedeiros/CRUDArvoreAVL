@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include <time.h>
 #include "Aluno.h"
 #include "Arvore.h"
 #include "Trabalho.h"
@@ -9,26 +10,29 @@
 // OK
 int menu(Arvore *arv)
 {
-	int opcao, cadastrou, matricula;
-	Aluno *aluno = NULL;
-    char **dados = NULL;
-
+	int opcao;
+   
 	system("cls");
 
 	printf(" \n\t"
 		"CRUD usando Arvore \n\n\t"
 		"Selecione o que deseja fazer \n\t"
-		"1 - Cadastrar Aluno \n\t"
-		"2 - Excluir Aluno \n\t"
-		"3 - Pesquisar Aluno \n\t"
-		"4 - Salvar \n\t"
-		"5 - Sair \n\t");
+		"1 - Carregar Alunos para memoria \n\t"
+		"2 - Cadastrar novo Aluno na base de dados \n\t" 
+		"3 - Listar Alunos por ordem de matricula \n\t"
+		"4 - Listar Alunos por arquivo \n\t"
+		"5 - Consular Aluno \n\t"
+		"6 - Alterar Aluno \n\t"
+		"7 - Remover Aluno \n\n"
+		"8 - Remover Alunos por arquivo \n\t"
+		"9 - Remover todos alunos \n\t"
+		"10 - Salvar alteracoes \n\t" );
 
 	printf(">> ");
 	scanf("%d", &opcao);
 	fflush(stdin);
 
-	while (opcao > 5 || opcao < 1)
+	while (opcao > 10 || opcao < 1)
 	{
 		printf("\tSelecione uma opcao valida! \n\t");
 		printf(">> ");
@@ -39,52 +43,61 @@ int menu(Arvore *arv)
 	switch (opcao)
 	{
 		case 1:
-			cadastrou = cadastrar_aluno(arv);
-            if (!cadastrou)
-                printf("\tOcorreu um erro ao cadastrar o aluno! \n");
-            else
-                printf("\tAluno cadastrado com sucesso! \n");
-            getch();
-            fflush(stdin);
-			break;
+			printf("\n\tCARREGANDO! \n\t"
+			"Aguarde um momento... \n");
+
+			clock_t c0 = clock();
+
+			carregar_arvore(arv);
+
+			clock_t c1 = clock();
+
+			double timestamp = (c1 - c0) * 1000 / CLOCKS_PER_SEC;
+
+			printf("\t%.0lfms para inclusao dos dados na arvore. \n", timestamp);
+
+		    printf("\tAltura da arvore: %d \n\t", altura(arv));
+
+			system("pause");
+
+		    break;
 		case 2:
-			excluir_aluno(arv);
+			novoAluno(arv);
 			break;
 		case 3:
-			printf("\tQual a matricula do aluno? ");
-			scanf("%d", &matricula);
-			fflush(stdin);
-
-			while (matricula < 1)
-			{
-				printf("\tInsira uma matricula valida: ");
-				scanf("%d", &matricula);
-				fflush(stdin);
-			}
-
-			aluno = pesquisar_aluno(arv, matricula);
-			if (aluno == NULL)
-				printf("\tAluno não encontrado! \n");
+			printf("Imprimindo em ordem.. \n");
+			if (arv == NULL)
+				printf("Carregue sua arvore na base de dados.");
 			else
-			{
-				dados = getDadosAluno(aluno);
-				printf("\tMatricula: %s \n\t"
-						"Nome: %s \n\t"
-						"E-mail: %s \n\t"
-						"Telefone: %s \n\t", dados[0], dados[1], dados[2], dados[3]);
-			}
-
-			if (dados != NULL)
-				free(dados);
-
-			getch();
-			fflush(stdin);
+			imprimir_in_ordem(arv);
+			system("pause");
 			break;
 		case 4:
-			salvar(arv);
+			listar_alunos(arv);
+
+			clock_t c2 = clock();
+			//imprimir_in_ordem(arv);
+		
+
+			clock_t c3 = clock();
+
+			timestamp = (c3 - c2) * 1000 / CLOCKS_PER_SEC;
+
+			printf("\t%.0lfms para listar os dados da arvore. \n", timestamp);
+			
+			system("pause");
 			break;
 		case 5:
-			return 0;
+			consultarAluno(arv);
+			break;
+		case 6:
+			break;
+		case 7:
+			excluir_aluno(arv);
+			break;
+		case 10:
+			salvar(arv);
+			break;
 		default:
 			printf("\tERRO NA ESTRUTURA DE SWITCH DO MENU");
 			break;
@@ -92,9 +105,11 @@ int menu(Arvore *arv)
 	return 1;
 }
 
+
 // TRANSFORMA OS DADOS DA STRING  LIDA NO ARQUIVO EM UM ARRAY DE STRINGS.
 // O ARRAY CONTÉM OS DADOS DO ALUNO NA SEQUENCIA PADRÃO (NOME, MATRICULA, E-MAIL E TELEFONE)
 // OK
+
 char** recuperar_dados(char *str)
 {
 	// Ex de string recebida por parametro:
@@ -141,7 +156,7 @@ char** recuperar_dados(char *str)
 // OK // carrega os dados do arquivo na arvore (em memória)
 void carregar_arvore(Arvore *arv)
 {
-	FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Trabalho\\BDAlunos10e6v1.txt", "r");
+	FILE *fp = fopen("C:\\Users\\67342\\Documents\\ToolsDeveloper\\CRUDArvoreAVL\\Trabalho\\BDAlunos10e5v3.txt", "r");
 	char str[1000]; // "str" receberá cada linha do arquivo e será fragmentada para um array de strings.
 	char **dados; // "dados" guardará o array de strings da fragmentação de "str"
 	int i = 0;
@@ -201,13 +216,54 @@ int excluir_aluno(Arvore *arv)
 // LISTA OS ALUNOS DE UM DETERMINADO ARQUIVO QUE CONTÉM UMA LISTA DE MATRÍCULAS.
 // OK
 void listar_alunos(Arvore *arv)
-{
-    FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Trabalho\\PesqAlunos10e5.txt", "r");
+{	
+
+	// pra facilitar nossa vida ao alterar os arquivos de pesquisa.
+	int arquivo;
+	char fileName[20];	
+	char Path[100] = "C:\\Users\\67342\\Documents\\ToolsDeveloper\\CRUDArvoreAVL\\Trabalho\\";
+
+	printf("Escolha o numero de potencia ex 1: 10^1 = 10 , 2: 10^2 = 100 , n: 10^n: \n");
+	scanf("%d", &arquivo);
+	fflush(stdin);
+
+	while(arquivo < 1 || arquivo > 5) {
+		printf("Numero maximo de potencia excedida..");
+		scanf("%d", &arquivo);
+		fflush(stdin);
+	}
+
+	switch(arquivo){
+		case 1:
+		strcpy(fileName,"PesqAlunos10e1.txt");
+		break;
+		case 2:
+		strcpy(fileName,"PesqAlunos10e2.txt");
+		break;
+		case 3:
+		strcpy(fileName,"PesqAlunos10e3.txt");
+		break;
+		case 4:
+		strcpy(fileName,"PesqAlunos10e4.txt");
+		break;
+		case 5:
+		strcpy(fileName,"PesqAlunos10e5.txt");
+		break;
+		default:
+		//listar_alunos(arv);
+		break;
+	}
+
+
+	printf("\tListando alunos pelo arquivo %s... \n", fileName);
+
+    FILE *fp = fopen(strcat(Path,fileName), "r");
+
 	char str[20]; // "str" receberá cada linha do arquivo.
     int matricula; // "matricula" receberá o valor de "str" em formato inteiro.
     Aluno *aluno;
 
-    printf("\n \t\tNome \t\tMatricula \t  E-mail \t  Telefone \n\n");
+    printf("\n \tNome \tMatricula \t  E-mail \t  Telefone \n\n");
 
     while (fgets(str, sizeof str, fp) != NULL)
 	{
@@ -249,6 +305,7 @@ char* intToString(int matricula)
 int cadastrar_aluno(Arvore *arv)
 {
 	Aluno *aluno;
+	// percorre até o último nó a direita da árvore
     int matricula = maior_chave(arv) + 1;
 	char *novaMatricula = intToString(matricula);
 	char nome[50], telefone[10], email[50];
@@ -340,3 +397,44 @@ void salvar(Arvore *arv)
 	fflush(stdin);
 }
 
+void novoAluno(Arvore *arv){
+	int cadastrou = cadastrar_aluno(arv);
+        if (!cadastrou)
+            printf("\tOcorreu um erro ao cadastrar o aluno! \n");
+          else
+            printf("\tAluno cadastrado com sucesso! \n");
+      getch();
+      fflush(stdin);
+}
+
+void consultarAluno(Arvore *arv){
+	
+	Aluno *aluno = NULL;
+	char **dados = NULL;	
+
+ 	int matricula;
+	printf("\tQual a matricula do aluno? ");
+	scanf("%d", &matricula);
+	fflush(stdin);
+		while (matricula < 1){
+			printf("\tInsira uma matricula valida: ");
+				scanf("%d", &matricula);
+					fflush(stdin);
+		}
+
+		aluno = pesquisar_aluno(arv, matricula);
+		if (aluno == NULL){
+			printf("\tAluno não encontrado! \n");
+		}
+		else {
+			dados = getDadosAluno(aluno);
+			printf("\tMatricula: %s \n\t"
+			"Nome: %s \n\t"
+			"E-mail: %s \n\t"
+			"Telefone: %s \n\t", dados[0], dados[1], dados[2], dados[3]);
+		}
+		if (dados != NULL)
+			free(dados);
+			getch();
+			fflush(stdin);
+}
