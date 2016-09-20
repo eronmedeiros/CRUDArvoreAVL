@@ -78,6 +78,18 @@ int contar_folhas(Arvore *arv)
 	return contar_folhas_rec(arv->raiz);
 }
 
+int alturaNo(No *no)
+{
+	if (no != NULL)
+		return no->altura;
+	return 0;
+}
+
+int altura2(Arvore *arv)
+{
+	return alturaNo(arv->raiz) - 1;
+}
+
 int altura_rec(No *no)
 {
 	if (no != NULL)
@@ -277,18 +289,6 @@ Aluno* buscar(Arvore *arv, int key)
 
 }
 
-int alturaNo(No *no)
-{
-	if (no != NULL)
-		return no->altura;
-	return 0;
-}
-
-int altura2(Arvore *arv)
-{
-	return alturaNo(arv->raiz) - 1;
-}
-
 /*
 ----------------------------------
 -------------ROTAÇÕES-------------
@@ -339,6 +339,27 @@ No* rotacao_dupla_a_direita(No *no)
 ----------------------------------
 */
 
+int teste_avl_rec(No *no)
+{
+    if (no != NULL)
+    {
+        int ad = teste_avl_rec(no->dir);
+        int ae = teste_avl_rec(no->esq);
+        int fb = ad - ae;
+
+        if (abs(fb) > 1)
+            printf("Arvore troncha meu caro, No %d nao balanceado. Fb = %d \n", no->info, fb);
+
+        return ((ad > ae ? ad : ae) + 1);
+    }
+	return 0;
+}
+
+void teste_avl(Arvore *arv)
+{
+    teste_avl_rec(arv->raiz);
+}
+
 // RETORNA 0 CASO O ALUNO JÁ EXISTA NA ARVORE E 1 CASO A INSERÇÃO OCORRA COM SUCESSO.
 int inserir_rec(No **no, int key, Aluno *aluno)
 {
@@ -367,6 +388,7 @@ int inserir_rec(No **no, int key, Aluno *aluno)
 					*no = rotacao_dupla_a_esquerda(no2);
 			}
             return 1;
+
         }
 		else if (key < no2->info)
         {
@@ -408,7 +430,7 @@ int inserir(Arvore *arv, int key, Aluno *aluno)
 	return inserir_rec(&arv->raiz, key, aluno);
 }
 
-// FUNÇÃO UTILIZADA EM "remover_rec()".
+// FUNÇÃO UTILIZADA EM "remover_rec()". PEGA O NÓ DE MAIOR CHAVE.
 No* pegar_maior(No **no)
 {
     No *no2 = *no;
@@ -435,7 +457,7 @@ int remover_rec(No **no, int key)
 
         if (key > no2->info)
         {
-            removeu = remover_rec(no2->dir, key);
+            removeu = remover_rec(&no2->dir, key);
 			if (!removeu)
 				return 0;
 			// PRECISA AJUSTAR A ALTURA NO2
@@ -443,7 +465,7 @@ int remover_rec(No **no, int key)
         }
         else if (key < no2->info)
         {
-			removeu = remover_rec(no2->esq, key);
+			removeu = remover_rec(&no2->esq, key);
 			if (!removeu)
 				return 0;
 			// PRECISA AJUSTAR A ALTURA DO NO2
@@ -467,6 +489,52 @@ int remover_rec(No **no, int key)
             else // (no2->dir == NULL)
                 *no = no2->esq;
 
+            free(no2);
+        }
+		return 1;
+    }
+	return 0;
+}
+
+int remover_rec2(No **no, int key)
+{
+    No *no2 = *no;
+
+    if (no2 != NULL)
+    {
+		int removeu;
+
+        if (key > no2->info)
+        {
+            removeu = remover_rec(&no2->dir, key);
+			if (!removeu)
+				return 0;
+			// PRECISA AJUSTAR A ALTURA NO2
+
+        }
+        else if (key < no2->info)
+        {
+			removeu = remover_rec(&no2->esq, key);
+			if (!removeu)
+				return 0;
+			// PRECISA AJUSTAR A ALTURA DO NO2
+        }
+        else // (key == no2->info)
+        {
+            if (no2->dir != NULL && no2->esq != NULL)
+            {
+                *no = pegar_maior(&no2->esq);
+                (*no)->dir = no2->dir;
+                (*no)->esq = no2->esq;
+            }
+            else if (no2->dir == NULL && no2->esq == NULL)
+                *no = NULL;
+            else if (no2->esq == NULL)
+                *no = no2->dir;
+            else // (no2->dir == NULL)
+                *no = no2->esq;
+
+            destruirAluno(no2->aluno);
             free(no2);
         }
 		return 1;

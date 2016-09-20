@@ -9,8 +9,9 @@
 // OK
 int menu(Arvore *arv)
 {
-	int opcao;
-	Aluno *aluno;
+	int opcao, cadastrou, matricula;
+	Aluno *aluno = NULL;
+    char **dados = NULL;
 
 	system("cls");
 
@@ -38,16 +39,18 @@ int menu(Arvore *arv)
 	switch (opcao)
 	{
 		case 1:
-			cadastrar_aluno(arv);
+			cadastrou = cadastrar_aluno(arv);
+            if (!cadastrou)
+                printf("\tOcorreu um erro ao cadastrar o aluno! \n");
+            else
+                printf("\tAluno cadastrado com sucesso! \n");
+            getch();
+            fflush(stdin);
 			break;
 		case 2:
 			excluir_aluno(arv);
 			break;
 		case 3:
-			;
-			int matricula;
-			char **dados = NULL;
-
 			printf("\tQual a matricula do aluno? ");
 			scanf("%d", &matricula);
 			fflush(stdin);
@@ -174,7 +177,7 @@ Aluno* pesquisar_aluno(Arvore *arv, int key)
 
 // RETORNA 0 CASO NÃO EXISTA O ALUNO OU 1 CASO A REMOÇÃO OCORRA COM SUCESSO.
 // OK
-void excluir_aluno(Arvore *arv)
+int excluir_aluno(Arvore *arv)
 {
     int matricula, removeu;
 
@@ -192,24 +195,14 @@ void excluir_aluno(Arvore *arv)
 	}
 
 	printf("\tExcluindo Aluno... \n");
-    removeu = remover(arv, matricula);
-
-	if (!removeu)
-	{
-		printf("\tO aluno de matricula %d não existe! Exclusão abortada... \n", matricula);
-		system("pause");
-		return;
-	}
-
-	printf("\tO aluno de matricula %d foi excluido com sucesso! \n", matricula);
-	system("pause");
+    return remover(arv, matricula);
 }
 
 // LISTA OS ALUNOS DE UM DETERMINADO ARQUIVO QUE CONTÉM UMA LISTA DE MATRÍCULAS.
 // OK
 void listar_alunos(Arvore *arv)
 {
-    FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Trabalho\\PesqAlunos10e1.txt", "r");
+    FILE *fp = fopen("C:\\Users\\1510522\\Desktop\\CRUDArvoreAVL\\Trabalho\\PesqAlunos10e5.txt", "r");
 	char str[20]; // "str" receberá cada linha do arquivo.
     int matricula; // "matricula" receberá o valor de "str" em formato inteiro.
     Aluno *aluno;
@@ -222,10 +215,10 @@ void listar_alunos(Arvore *arv)
 
 		aluno = pesquisar_aluno(arv, matricula);
 
-        printf("Mat.: %d - ", matricula);
+        printf("Mat: %d -\t", matricula);
 
 		if(aluno != NULL)
-            printf("%s %s %s %s \n", getMatriculaAluno(aluno), getNomeAluno(aluno), getEmailAluno(aluno), getTelefoneAluno(aluno));
+            printf("%s\t%s %s %s \n", getMatriculaAluno(aluno), getNomeAluno(aluno), getEmailAluno(aluno), getTelefoneAluno(aluno));
         else
             printf("Aluno de matricula \"%d\" não encontrado! \n", matricula);
 	}
@@ -252,10 +245,11 @@ char* intToString(int matricula)
 }
 
 // OK
-void cadastrar_aluno(Arvore *arv)
+
+int cadastrar_aluno(Arvore *arv)
 {
 	Aluno *aluno;
-    int inseriu, matricula = maior_chave(arv) + 1;
+    int matricula = maior_chave(arv) + 1;
 	char *novaMatricula = intToString(matricula);
 	char nome[50], telefone[10], email[50];
 
@@ -280,19 +274,12 @@ void cadastrar_aluno(Arvore *arv)
 	setEmailAluno(aluno, email);
 	setTelefoneAluno(aluno, telefone);
 
-	inseriu = inserir(arv, matricula, aluno);
+	int cadastrou = inserir(arv, matricula, aluno);
 
-	if (!inseriu)
-	{
-		printf("\tOcorreu um erro ao cadastrar o aluno %s! \n", nome);
-		destruirAluno(aluno); // ALUNO NÃO INCLUIDO! PRECISA SER DESTRUIDO.
-		getch();
-		fflush(stdin);
-		return;
-	}
-	printf("\tAluno %s cadastrado com sucesso! \n", nome); // ALUNO INCLUIDO COM SUCESSO.
-	getch();
-	fflush(stdin);
+	if(!cadastrou)
+        destruirAluno(aluno);
+
+    return cadastrou;
 }
 
 // TRANSFORMA OS DADOS DO ALUNO EM UMA UNICA STRING.

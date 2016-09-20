@@ -23,5 +23,6 @@ int estaVazia(Arvore *arv);
 void imprimir_pre_ordem(Arvore *arv);
 void imprimir_in_ordem(Arvore *arv);
 void imprimir_pos_ordem(Arvore *arv);
+void teste_avl(Arvore *arv);
 
 #endif
