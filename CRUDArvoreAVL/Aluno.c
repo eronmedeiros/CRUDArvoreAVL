@@ -39,7 +39,7 @@ void destruirAluno(Aluno *aluno)
 // OK
 void setMatriculaAluno(Aluno *aluno, char *matricula)
 {
-    aluno->matricula = malloc(10 * sizeof(char));
+    aluno->matricula = (char*) malloc(10 * sizeof(char));
     strcpy(aluno->matricula, matricula);
 }
 
@@ -52,7 +52,7 @@ char* getMatriculaAluno(Aluno *aluno)
 // OK
 void setNomeAluno(Aluno *aluno, char *nome)
 {
-    aluno->nome = malloc(50 * sizeof(char));
+    aluno->nome = (char*) malloc(50 * sizeof(char));
     strcpy(aluno->nome, nome);
 }
 
@@ -65,7 +65,7 @@ char* getNomeAluno(Aluno *aluno)
 // OK
 void setEmailAluno(Aluno *aluno, char *email)
 {
-    aluno->email = malloc(30 * sizeof(char));
+    aluno->email = (char*) malloc(30 * sizeof(char));
     strcpy(aluno->email, email);
 }
 
@@ -78,7 +78,7 @@ char* getEmailAluno(Aluno *aluno)
 // OK
 void setTelefoneAluno(Aluno *aluno, char *telefone)
 {
-    aluno->telefone = malloc(10 * sizeof(char));
+    aluno->telefone = (char*) malloc(10 * sizeof(char));
     strcpy(aluno->telefone, telefone);
 }
 

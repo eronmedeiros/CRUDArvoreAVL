@@ -6,8 +6,8 @@
 
 int menu(Arvore *arv);
 void carregar_arvore(Arvore *arv);
-Aluno* pesquisar_aluno(Arvore *arv, int key);
-int excluir_aluno(Arvore *arv);
+void pesquisar_aluno(Arvore *arv);
+void excluir_aluno(Arvore *arv);
 int cadastrar_aluno(Arvore *arv);
 void salvar(Arvore *arv);
 void sair_sem_salvar();

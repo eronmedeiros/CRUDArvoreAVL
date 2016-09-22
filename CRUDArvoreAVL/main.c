@@ -9,8 +9,7 @@ int main(int argc, char *argv[])
 {
 	Arvore * arv = criar();
 
-	
-	while (menu(arv));
+	//while (menu(arv));
 
 	destruir(arv);
 	printf("\tPrograma finalizado! \n\t");
