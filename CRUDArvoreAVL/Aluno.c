@@ -16,7 +16,7 @@ struct aluno
 };
 
 // OK
-Aluno *criarAluno()
+Aluno *criar_aluno()
 {
     Aluno *a = (Aluno*) malloc(sizeof(Aluno));
     a->matricula = NULL;
@@ -27,7 +27,7 @@ Aluno *criarAluno()
 }
 
 // OK
-void destruirAluno(Aluno *aluno)
+void destruir_aluno(Aluno *aluno)
 {
     free(aluno->matricula);
     free(aluno->nome);
@@ -37,59 +37,59 @@ void destruirAluno(Aluno *aluno)
 }
 
 // OK
-void setMatriculaAluno(Aluno *aluno, char *matricula)
+void set_matricula_aluno(Aluno *aluno, char *matricula)
 {
     aluno->matricula = (char*) malloc(10 * sizeof(char));
     strcpy(aluno->matricula, matricula);
 }
 
 // OK
-char* getMatriculaAluno(Aluno *aluno)
+char* get_matricula_aluno(Aluno *aluno)
 {
     return aluno->matricula;
 }
 
 // OK
-void setNomeAluno(Aluno *aluno, char *nome)
+void set_nome_aluno(Aluno *aluno, char *nome)
 {
     aluno->nome = (char*) malloc(50 * sizeof(char));
     strcpy(aluno->nome, nome);
 }
 
 // OK
-char* getNomeAluno(Aluno *aluno)
+char* get_nome_aluno(Aluno *aluno)
 {
     return aluno->nome;
 }
 
 // OK
-void setEmailAluno(Aluno *aluno, char *email)
+void set_email_aluno(Aluno *aluno, char *email)
 {
     aluno->email = (char*) malloc(30 * sizeof(char));
     strcpy(aluno->email, email);
 }
 
 // OK
-char* getEmailAluno(Aluno *aluno)
+char* get_email_aluno(Aluno *aluno)
 {
 	return aluno->email;
 }
 
 // OK
-void setTelefoneAluno(Aluno *aluno, char *telefone)
+void set_telefone_aluno(Aluno *aluno, char *telefone)
 {
-    aluno->telefone = (char*) malloc(10 * sizeof(char));
+    aluno->telefone = (char*) malloc(20 * sizeof(char));
     strcpy(aluno->telefone, telefone);
 }
 
 // OK
-char* getTelefoneAluno(Aluno *aluno)
+char* get_telefone_aluno(Aluno *aluno)
 {
 	return aluno->telefone;
 }
 
 // OK
-char** getDadosAluno(Aluno *aluno)
+char** get_dados_aluno(Aluno *aluno)
 {
     char **dados = (char**) malloc(4 * sizeof(char*));
 

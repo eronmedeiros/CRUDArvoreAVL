@@ -39,7 +39,7 @@ void destruir_rec(No *no)
 	{
 		destruir_rec(no->esq);
 		destruir_rec(no->dir);
-        destruirAluno(no->aluno);
+        destruir_aluno(no->aluno);
 		free(no);
 	}
 }
@@ -78,7 +78,7 @@ int contar_folhas(Arvore *arv)
 	return contar_folhas_rec(arv->raiz);
 }
 
-int alturaNo(No *no)
+int altura_no(No *no)
 {
 	if (no != NULL)
 		return no->altura;
@@ -87,7 +87,7 @@ int alturaNo(No *no)
 
 int altura2(Arvore *arv)
 {
-	return alturaNo(arv->raiz) - 1;
+	return altura_no(arv->raiz) - 1;
 }
 
 int altura_rec(No *no)
@@ -106,7 +106,7 @@ int altura(Arvore *arv)
 	return altura_rec(arv->raiz);
 }
 
-int estaVazia(Arvore *arv)
+int esta_vazia(Arvore *arv)
 {
 	return (arv->raiz == NULL ? 1 : 0 );
 }
@@ -151,8 +151,8 @@ void imprimir_in_ordem_rec(No *no)
 	{
 	    char **dados;
 		imprimir_in_ordem_rec(no->esq);
-		dados = getDadosAluno(no->aluno);
-		printf("%s  %s %s  %s \n", dados[0], dados[1], dados[2], dados[3]);
+		dados = get_dados_aluno(no->aluno);
+		printf("%s\t%s\t%s\t%s \n", dados[0], dados[1], dados[2], dados[3]);
 		imprimir_in_ordem_rec(no->dir);
 	}
 }
@@ -163,7 +163,7 @@ void imprimir_in_ordem(Arvore *arv)
 		printf("Carregue sua arvore na base de dados antes de qualquer visualizacao!\n");
 	else
 		imprimir_in_ordem_rec(arv->raiz);
-	
+
 	printf("\n");
 }
 
@@ -173,7 +173,7 @@ void imprimir_pre_ordem_rec(No *no)
 	if (no != NULL)
 	{
 	    char **dados;
-		dados = getDadosAluno(no->aluno);
+		dados = get_dados_aluno(no->aluno);
 		printf("%s  %s %s  %s \n", dados[0], dados[1], dados[2], dados[3]);
 		imprimir_pre_ordem_rec(no->esq);
 		imprimir_pre_ordem_rec(no->dir);
@@ -182,7 +182,11 @@ void imprimir_pre_ordem_rec(No *no)
 
 void imprimir_pre_ordem(Arvore *arv)
 {
-	imprimir_pre_ordem_rec(arv->raiz);
+    if(arv->raiz == NULL)
+		printf("Carregue sua arvore na base de dados antes de qualquer visualizacao!\n");
+	else
+        imprimir_pre_ordem_rec(arv->raiz);
+
 	printf("\n");
 }
 
@@ -196,14 +200,17 @@ void imprimir_pos_ordem_rec(No *no)
 		imprimir_pos_ordem_rec(no->esq);
 		imprimir_pos_ordem_rec(no->dir);
 
-		dados = getDadosAluno(no->aluno);
+		dados = get_dados_aluno(no->aluno);
 		printf("%s  %s %s  %s \n", dados[0], dados[1], dados[2], dados[3]);
 	}
 }
 
 void imprimir_pos_ordem(Arvore *arv)
 {
-	imprimir_pos_ordem_rec(arv->raiz);
+    if(arv->raiz == NULL)
+		printf("Carregue sua arvore na base de dados antes de qualquer visualizacao!\n");
+	else
+        imprimir_pos_ordem_rec(arv->raiz);
 	printf("\n");
 }
 
@@ -216,6 +223,7 @@ int menor_chave_rec(No *no)
 
 int menor_chave(Arvore *arv)
 {
+    // IMPLEMENTAÇÃO ITERATIVA
 	if(arv->raiz != NULL)
 	{
 		No *no = arv->raiz;
@@ -228,7 +236,7 @@ int menor_chave(Arvore *arv)
 	return -1;
 
 	/*
-	IMPLEMENTAÇÃO RECURSIVA
+	// IMPLEMENTAÇÃO RECURSIVA
 	if (arv->raiz != NULL)
 		return menor_chave_rec(arv->raiz);
 	return -1;
@@ -244,6 +252,7 @@ int maior_chave_rec(No *no)
 
 int maior_chave(Arvore *arv)
 {
+    // IMPLEMENTAÇÃO ITERATIVA
 	if(arv->raiz != NULL)
 	{
 		No *no = arv->raiz;
@@ -280,6 +289,7 @@ Aluno* buscar_rec(No *no, int key)
 Aluno* buscar(Arvore *arv, int key)
 {
 	/*
+	// IMPLEMENTAÇÃO ITERATIVA
 	No *no = arv->raiz;
 	for (no = arv->raiz;
 		(no != NULL && no->info != key);
@@ -352,7 +362,7 @@ int teste_avl_rec(No *no)
         int fb = ad - ae;
 
         if (abs(fb) > 1)
-            printf("Arvore troncha meu caro, No %d nao balanceado. Fb = %d \n", no->info, fb);
+            printf("No %d nao balanceado. Fb = %d \n", no->info, ad - ae);
 
         return ((ad > ae ? ad : ae) + 1);
     }
@@ -379,12 +389,12 @@ int inserir_rec(No **no, int key, Aluno *aluno)
             if(!adicionou)
                 return 0;
 
-			no2->altura = ((alturaNo(no2->esq) > alturaNo(no2->dir) ? alturaNo(no2->esq) : alturaNo(no2->dir)) + 1);
+			no2->altura = ((altura_no(no2->esq) > altura_no(no2->dir) ? altura_no(no2->esq) : altura_no(no2->dir)) + 1);
 
-			int fb = alturaNo(no2->dir) - alturaNo(no2->esq);
+			int fb = altura_no(no2->dir) - altura_no(no2->esq);
 			if(fb > 1)
 			{
-				fb = alturaNo(no2->dir->dir) - alturaNo(no2->dir->esq);
+				fb = altura_no(no2->dir->dir) - altura_no(no2->dir->esq);
 
 				if(fb >= 0)
 					*no = rotacao_a_esquerda(no2);
@@ -400,12 +410,12 @@ int inserir_rec(No **no, int key, Aluno *aluno)
             if (!adicionou)
                 return 0;
 
-			no2->altura = ((alturaNo(no2->esq) > alturaNo(no2->dir) ? alturaNo(no2->esq) : alturaNo(no2->dir)) + 1);
+			no2->altura = ((altura_no(no2->esq) > altura_no(no2->dir) ? altura_no(no2->esq) : altura_no(no2->dir)) + 1);
 
-			int fb = alturaNo(no2->dir) - alturaNo(no2->esq);
+			int fb = altura_no(no2->dir) - altura_no(no2->esq);
 			if(fb < -1)
 			{
-				fb = alturaNo(no2->esq->dir) - alturaNo(no2->esq->esq);
+				fb = altura_no(no2->esq->dir) - altura_no(no2->esq->esq);
 
 				if(fb <= 0)
 					*no = rotacao_a_direita(no2);
@@ -478,7 +488,7 @@ int remover_rec(No **no, int key)
         {
             if (no2->dir == NULL && no2->esq == NULL)
             {
-                destruirAluno(no2->aluno);
+                destruir_aluno(no2->aluno);
                 *no = NULL;
             }
             else if (no2->dir != NULL && no2->esq != NULL)
@@ -486,13 +496,13 @@ int remover_rec(No **no, int key)
                 *no = pegar_maior(&no2->esq);
                 (*no)->dir = no2->dir;
                 (*no)->esq = no2->esq;
-                destruirAluno(no2->aluno);
             }
             else if (no2->esq == NULL)
                 *no = no2->dir;
             else // (no2->dir == NULL)
                 *no = no2->esq;
 
+            destruir_aluno(no2->aluno);
             free(no2);
         }
 		return 1;
@@ -500,6 +510,9 @@ int remover_rec(No **no, int key)
 	return 0;
 }
 
+// AINDA PRECISO AJUSTAR
+// ESSA FUNÇÃO DEVE SER DE REMOÇÃO NÃO BALANCEADA, PORÉM FUNCIONAL
+// !OK
 int remover_rec2(No **no, int key)
 {
     No *no2 = *no;
@@ -538,7 +551,7 @@ int remover_rec2(No **no, int key)
             else // (no2->dir == NULL)
                 *no = no2->esq;
 
-            destruirAluno(no2->aluno);
+            destruir_aluno(no2->aluno);
             free(no2);
         }
 		return 1;

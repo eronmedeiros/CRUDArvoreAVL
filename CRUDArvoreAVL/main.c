@@ -9,14 +9,11 @@ int main(int argc, char *argv[])
 {
 	Arvore * arv = criar();
 
-	//while (menu(arv));
+	while (menu(arv));
 
-	destruir(arv);
 	printf("\tPrograma finalizado! \n\t");
-
-    //fgets(word1, sizeof(word1), stdin);
-
-	system("pause");
+	destruir(arv);
+	getch();
 
 	return 0;
 }

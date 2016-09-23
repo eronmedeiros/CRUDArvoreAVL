@@ -3,21 +3,18 @@
 
 typedef struct aluno Aluno;
 
-Aluno *criarAluno();
-void destruirAluno(Aluno *aluno);
 
-void setMatriculaAluno(Aluno *aluno, char *matricula);
-char* getMatriculaAluno(Aluno *aluno);
 
-void setNomeAluno(Aluno *aluno, char *nome);
-char* getNomeAluno(Aluno *aluno);
-
-void setEmailAluno(Aluno *aluno, char *email);
-char* getEmailAluno(Aluno *aluno);
-
-void setTelefoneAluno(Aluno *aluno, char *telefone);
-char* getTelefoneAluno(Aluno *aluno);
-
-char** getDadosAluno(Aluno *aluno);
+Aluno *criar_aluno();
+void destruir_aluno(Aluno *aluno);
+void set_matricula_aluno(Aluno *aluno, char *matricula);
+char* get_matricula_aluno(Aluno *aluno);
+void set_nome_aluno(Aluno *aluno, char *nome);
+char* get_nome_aluno(Aluno *aluno);
+void set_email_aluno(Aluno *aluno, char *email);
+char* get_email_aluno(Aluno *aluno);
+void set_telefone_aluno(Aluno *aluno, char *telefone);
+char* get_telefone_aluno(Aluno *aluno);
+char** get_dados_aluno(Aluno *aluno);
 
 #endif // ALUNO_H

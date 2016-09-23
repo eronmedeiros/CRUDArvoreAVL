@@ -4,15 +4,20 @@
 #include "Arvore.h"
 #include "Aluno.h"
 
-int menu(Arvore *arv);
+char* int_to_string(int matricula);
+char** recuperar_dados(char *str);
+char* aluno_to_string(Aluno* aluno);
+void novos_dados_do_aluno(Aluno *aluno);
 void carregar_arvore(Arvore *arv);
+void cadastrar_aluno(Arvore *arv);
+void listar_alunos_da_arvore(Arvore *arv);
+void listar_alunos_do_arquivo(Arvore *arv);
 void pesquisar_aluno(Arvore *arv);
-void excluir_aluno(Arvore *arv);
-int cadastrar_aluno(Arvore *arv);
+void alterar_aluno(Arvore *arv);
+void remover_aluno(Arvore *arv);
+void remover_alunos_por_arquivo(Arvore *arv);
+void remover_todos_os_alunos(Arvore *arv);
 void salvar(Arvore *arv);
-void sair_sem_salvar();
-void consultarAluno(Arvore *arv);
-void novoAluno(Arvore *arv);
-void listar_alunos(Arvore *arv);
+int menu(Arvore *arv);
 
 #endif // !TRABALHO_H
