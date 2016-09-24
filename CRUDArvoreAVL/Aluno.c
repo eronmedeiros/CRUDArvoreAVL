@@ -93,8 +93,8 @@ char** get_dados_aluno(Aluno *aluno)
 {
     char **dados = (char**) malloc(4 * sizeof(char*));
 
-    dados[0] = aluno->matricula;
-    dados[1] = aluno->nome;
+    dados[0] = aluno->nome;
+    dados[1] = aluno->matricula;
     dados[2] = aluno->email;
     dados[3] = aluno->telefone;
 

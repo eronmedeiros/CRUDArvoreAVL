@@ -9,7 +9,7 @@ typedef struct no No;
 struct no
 {
 	int info;
-	int altura; // USADO PARA BALANCEAR A ARVORE
+	int altura; // ESSA ALTURA É CONTADA COMO NÚMERO DE NÓS DA RAIZ ATÉ A FOLHA, NÃO NÚMERO DE PULOS.
 	Aluno *aluno;
 	No *esq;
 	No *dir;
@@ -152,7 +152,7 @@ void imprimir_in_ordem_rec(No *no)
 	    char **dados;
 		imprimir_in_ordem_rec(no->esq);
 		dados = get_dados_aluno(no->aluno);
-		printf("%s\t%s\t%s\t%s \n", dados[0], dados[1], dados[2], dados[3]);
+		printf("\t%s \t%s \t%s \t%s \n", dados[0], dados[1], dados[2], dados[3]);
 		imprimir_in_ordem_rec(no->dir);
 	}
 }
@@ -160,7 +160,7 @@ void imprimir_in_ordem_rec(No *no)
 void imprimir_in_ordem(Arvore *arv)
 {
 	if(arv->raiz == NULL)
-		printf("Carregue sua arvore na base de dados antes de qualquer visualizacao!\n");
+		printf("\tCarregue sua arvore na base de dados antes de qualquer visualizacao!\n");
 	else
 		imprimir_in_ordem_rec(arv->raiz);
 
@@ -444,9 +444,18 @@ int inserir(Arvore *arv, int key, Aluno *aluno)
 	return inserir_rec(&arv->raiz, key, aluno);
 }
 
-// FUNÇÃO UTILIZADA EM "remover_rec()". PEGA O NÓ DE MAIOR CHAVE.
+// FUNÇÃO UTILIZADA EM remover_rec(). PEGA O NÓ DE MAIOR CHAVE.
 No* pegar_maior(No **no)
 {
+    No *no2 = *no;
+
+    while (no2->dir != NULL)
+        no2 = no2->dir;
+
+    return no2;
+
+    /*
+    // IMPLEMENTAÇÃO RECURSIVA
     No *no2 = *no;
 
     if (no2->dir != NULL)
@@ -455,10 +464,9 @@ No* pegar_maior(No **no)
     *no = no2->esq;
 
     return no2;
+    */
 }
 
-// NÃO MANTEM A ARVORE BALANCEADA, MAS É O QUE TENHO POR ENQUANTO.
-// IMPLEMENTAREI O BALANCEAMENTO POSTERIORMENTE.
 // RETORNA 0 CASO NÃO HAJA O QUE REMOVER E 1 SE REMOVEU COM SUCESSO.
 // !OK // AINDA HÁ ALGUM ERRO QUE NÃO ENCONTREI
 int remover_rec(No **no, int key)
@@ -468,73 +476,47 @@ int remover_rec(No **no, int key)
     if (no2 != NULL)
     {
 		int removeu;
+		int fb;
 
         if (key > no2->info)
         {
             removeu = remover_rec(&no2->dir, key);
 			if (!removeu)
 				return 0;
-			// PRECISA AJUSTAR A ALTURA NO2
 
+			// PRECISA AJUSTAR A ALTURA DO NO2 E BALANCEAR
+			no2->altura = (altura_no(no2->dir) > altura_no(no2->esq) ? altura_no(no2->dir) : altura_no(no2->esq)) + 1;
+
+			fb = altura_no(no2->dir) - altura_no(no2->esq);
+            if (fb < -1)
+            {
+                fb = altura_no(no2->esq->dir) - altura_no(no2->esq->esq);
+
+				if(fb < 0)
+					*no = rotacao_a_direita(no2);
+				else
+					*no = rotacao_dupla_a_direita(no2);
+            }
         }
         else if (key < no2->info)
         {
 			removeu = remover_rec(&no2->esq, key);
 			if (!removeu)
 				return 0;
-			// PRECISA AJUSTAR A ALTURA DO NO2
-        }
-        else // (key == no2->info)
-        {
-            if (no2->dir == NULL && no2->esq == NULL)
+
+			// PRECISA AJUSTAR A ALTURA DO NO2 E BALANCEAR
+			no2->altura = (altura_no(no2->dir) > altura_no(no2->esq) ? altura_no(no2->dir) : altura_no(no2->esq)) + 1;
+
+			fb = altura_no(no2->dir) - altura_no(no2->esq);
+            if (fb > 1)
             {
-                destruir_aluno(no2->aluno);
-                *no = NULL;
+                fb = altura_no(no2->dir->dir) - altura_no(no2->dir->esq);
+
+				if(fb > 0)
+					*no = rotacao_a_esquerda(no2);
+				else
+					*no = rotacao_dupla_a_esquerda(no2);
             }
-            else if (no2->dir != NULL && no2->esq != NULL)
-            {
-                *no = pegar_maior(&no2->esq);
-                (*no)->dir = no2->dir;
-                (*no)->esq = no2->esq;
-            }
-            else if (no2->esq == NULL)
-                *no = no2->dir;
-            else // (no2->dir == NULL)
-                *no = no2->esq;
-
-            destruir_aluno(no2->aluno);
-            free(no2);
-        }
-		return 1;
-    }
-	return 0;
-}
-
-// AINDA PRECISO AJUSTAR
-// ESSA FUNÇÃO DEVE SER DE REMOÇÃO NÃO BALANCEADA, PORÉM FUNCIONAL
-// !OK
-int remover_rec2(No **no, int key)
-{
-    No *no2 = *no;
-
-    if (no2 != NULL)
-    {
-		int removeu;
-
-        if (key > no2->info)
-        {
-            removeu = remover_rec(&no2->dir, key);
-			if (!removeu)
-				return 0;
-			// PRECISA AJUSTAR A ALTURA NO2
-
-        }
-        else if (key < no2->info)
-        {
-			removeu = remover_rec(&no2->esq, key);
-			if (!removeu)
-				return 0;
-			// PRECISA AJUSTAR A ALTURA DO NO2
         }
         else // (key == no2->info)
         {
@@ -554,7 +536,7 @@ int remover_rec2(No **no, int key)
             destruir_aluno(no2->aluno);
             free(no2);
         }
-		return 1;
+        return 1;
     }
 	return 0;
 }

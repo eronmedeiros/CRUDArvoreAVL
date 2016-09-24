@@ -16,7 +16,7 @@ void pesquisar_aluno(Arvore *arv);
 void alterar_aluno(Arvore *arv);
 void remover_aluno(Arvore *arv);
 void remover_alunos_por_arquivo(Arvore *arv);
-void remover_todos_os_alunos(Arvore *arv);
+void remover_todos_os_alunos(Arvore **arv);
 void salvar(Arvore *arv);
 int menu(Arvore *arv);
 
