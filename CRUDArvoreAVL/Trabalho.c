@@ -8,10 +8,65 @@
 #include "Trabalho.h"
 
 // OK // AUXILIA OUTRAS FUNÇÕES
+char* get_caminho_do_arquivo()
+{
+	int opcao;
+	char *path = (char*) malloc(100 * sizeof(char));
+
+	path[0] = '\0';
+	strcat(path, "C:\\Users\\Eron\\Desktop\\CRUDArvoreAVL\\Trabalho\\");
+
+	printf("\tEscolha o numero do arquivo: \n\t"
+        "1) 10 alunos \n\t"
+        "2) 100 alunos \n\t"
+        "3) 1 mil alunos \n\t"
+        "4) 10 mil alunos \n\t"
+        "5) 100 mil alunos \n\t"
+        "6) 1 milhao de alunos \n\t"
+        ">> ");
+	scanf("%d", &opcao);
+	fflush(stdin);
+
+	while(opcao < 1 || opcao > 6)
+    {
+        printf("Escolha uma opcao valido: \n\t"
+                ">> ");
+        scanf("%d", &opcao);
+        fflush(stdin);
+	}
+
+	switch(opcao)
+	{
+		case 1:
+		    strcat(path, "PesqAlunos10e1.txt\0");
+            break;
+		case 2:
+		    strcat(path, "PesqAlunos10e2.txt\0");
+            break;
+		case 3:
+		    strcat(path, "PesqAlunos10e3.txt\0");
+            break;
+		case 4:
+		    strcat(path, "PesqAlunos10e4.txt\0");
+            break;
+		case 5:
+		    strcat(path, "PesqAlunos10e5.txt\0");
+            break;
+		case 6:
+		    strcat(path, "PesqAlunos10e6.txt\0");
+            break;
+		default:
+            printf("\n\tERRO NA ESTRUTURA DO SWITCH (get_caminho_do_arquivo) \n\n");
+            getch();
+            fflush(stdin);
+	}
+	return path;
+}
+// OK // AUXILIA OUTRAS FUNÇÕES
 char* int_to_string(int matricula)
 {
     int i;
-    char *str1 = (char *) malloc(7 * sizeof(char));
+    char *str1 = (char *) malloc(8 * sizeof(char));
     char str2[7];
 
     str1[0] = '\0';
@@ -28,19 +83,18 @@ char* int_to_string(int matricula)
 // OK // AUXILIA OUTRAS FUNÇÕES
 char** recuperar_dados(char *str)
 {
-	// Ex de string recebida por parametro:
-	// 1510522 | Aluno mat. 1510522 | 1510522@ffb.edu.br | 9151.0522
-	// NOME			MATRICULA				EMAIL			TELEFONE
+	// String recebida por parametro segue a sequencia NOME MATRICULA EMAIL TELEFONE
+	// ex: 1510522 | Aluno mat. 1510522 | 1510522@ffb.edu.br | 9151.0522
 
 	char **dados;
 	char *nome, *matricula, *email, *telefone;
 	int i, j;
 
-	dados =		(char **) malloc(4 * sizeof(char *));
-	nome =		(char *) malloc(50 * sizeof(char));
+	dados = (char **) malloc(4 * sizeof(char *));
+	nome = (char *) malloc(50 * sizeof(char));
 	matricula = (char *) malloc(10 * sizeof(char));
-	email =		(char *) malloc(50 * sizeof(char));
-	telefone =	(char *) malloc(10 * sizeof(char));
+	email = (char *) malloc(50 * sizeof(char));
+	telefone = (char *) malloc(10 * sizeof(char));
 
 	// recupera o nome
 	for (i = 0, j = 0; str[i] != '|'; i++, j++)
@@ -75,22 +129,20 @@ char* aluno_to_string(Aluno* aluno)
     if (aluno == NULL)
         return NULL;
 
-    char *str = (char*) malloc(128 * sizeof(char));
-    char **dados;
+    char *str = (char*) malloc(100 * sizeof(char));
+    char **dados = get_dados_aluno(aluno);
 
     // FORMATO PARA SER GUARDADO: "0000001 | Aluno mat. 0000001 | 0000001@ffb.edu.br | 9000.0001"
 
-    dados = get_dados_aluno(aluno);
-
     str[0] = '\0';
-    str = strcat(str, dados[0]); // NOME
-    str = strcat(str, " | Aluno mat. ");
-    str = strcat(str, dados[1]); // MATRICULA
-    str = strcat(str, " | ");
-    str = strcat(str, dados[2]); // EMAIL
-    str = strcat(str, " | ");
-    str = strcat(str, dados[3]); // TELEFONE
-    str = strcat(str, "\n\0");
+    strcat(str, dados[0]); // NOME
+    strcat(str, " | Aluno mat. ");
+    strcat(str, dados[1]); // MATRICULA
+    strcat(str, " | ");
+    strcat(str, dados[2]); // EMAIL
+    strcat(str, " | ");
+    strcat(str, dados[3]); // TELEFONE
+    strcat(str, "\n\0");
 
     free(dados);
 
@@ -101,23 +153,22 @@ char* aluno_to_string(Aluno* aluno)
 void novos_dados_do_aluno(Aluno *aluno)
 {
     int opcao, alterar_mais;
-    char novo_nome[50], novo_email[30], novo_telefone[20];
-    char *str;
+    char *novo;
 
     while (1)
     {
         printf("\n\tO que voce deseja alterar? \n\t"
-               "1 - Nome \n\t"
-               "2 - E-mail \n\t"
-               "3 - Telefone \n\t");
-        printf(">> ");
+                "1 - Nome \n\t"
+                "2 - E-mail \n\t"
+                "3 - Telefone \n\t"
+                ">> ");
         scanf("%d", &opcao);
         fflush(stdin);
 
         while (opcao < 1 || opcao > 3)
         {
-            printf("\tSelecione uma opcao valida: \n\t");
-            printf(">> ");
+            printf("\tSelecione uma opcao valida: \n\t"
+                    ">> ");
             scanf("%d", &opcao);
             fflush(stdin);
         }
@@ -125,58 +176,46 @@ void novos_dados_do_aluno(Aluno *aluno)
         switch (opcao)
         {
             case 1:
-                printf("\tNovo nome: \n\t");
-                printf(">> ");
-                fgets(novo_nome, sizeof novo_nome, stdin);
-                novo_nome[strlen(novo_nome) - 1] = '\0';
-
-                // FREE NOS DADOS QUE JÁ ESTAVAM LÁ, POIS set_nome_aluno() alocará uma nova memória.
-                str = get_nome_aluno(aluno);
-                free(str);
-
-                set_nome_aluno(aluno, novo_nome);
+                novo = (char*) malloc(50 * sizeof(char));
+                printf("\tNovo nome: \n\t"
+                        ">> ");
+                fgets(novo, 50, stdin);
+                novo[strlen(novo) - 1] = '\0';
+                set_nome_aluno(aluno, novo);
                 break;
             case 2:
+                novo = (char*) malloc(30 * sizeof(char));
                 printf("\tNovo e-mail: \n\t");
                 printf(">> ");
-                scanf("%s", novo_email);
-
-                // FREE NOS DADOS QUE JÁ ESTAVAM LÁ, POIS set_email_aluno() alocará uma nova memória.
-                str = get_email_aluno(aluno);
-                free(str);
-
-                set_email_aluno(aluno, novo_email);
+                scanf("%s", novo);
+                set_email_aluno(aluno, novo);
                 break;
             case 3:
+                novo = (char*) malloc(20 * sizeof(char));
                 printf("\tNovo telefone: \n\t");
                 printf(">> ");
-                scanf("%s", novo_telefone);
-
-                // FREE NOS DADOS QUE JÁ ESTAVAM LÁ, POIS get_telefone_aluno() alocará uma nova memória.
-                str = get_telefone_aluno(aluno);
-                free(str);
-
-                set_telefone_aluno(aluno, novo_telefone);
+                scanf("%s", novo);
+                set_telefone_aluno(aluno, novo);
                 break;
             default:
-                printf("\tERRO NO SWITCH DE ALTERACAO DE DADOS DO ALUNO \n");
+                printf("\n\tERRO NA ESTRUTURA DO SWITCH (novos_dados_do_aluno) \n\n");
+                getch();
         }
         fflush(stdin);
 
-        printf("\n\tDados atualizados! \n");
-
-        printf("\n\tDeseja alterar mais algum dado do aluno? \n\t"
-               "1 - SIM \n\t"
-               "0 - NAO \n\t");
-        printf(">> ");
+        printf("\n\tDados atualizados! \n\n\t"
+                "Deseja alterar mais algum dado do aluno? \n\t"
+                "1 - SIM \n\t"
+                "0 - NAO \n\t"
+                ">> ");
         fflush(stdin);
         scanf("%d", &alterar_mais);
         fflush(stdin);
 
         while (opcao < 0 || opcao > 1)
         {
-            printf("\tSelecione uma opcao valida: \n\t");
-            printf(">> ");
+            printf("\tSelecione uma opcao valida: \n\t"
+                    ">> ");
             scanf("%d", &opcao);
             fflush(stdin);
         }
@@ -184,16 +223,14 @@ void novos_dados_do_aluno(Aluno *aluno)
         if (!alterar_mais)
             break;
     }
-
 }
 
 // OK // OPÇÃO 1 DO MENU
 void carregar_arvore(Arvore *arv)
 {
-	FILE *fp = fopen("C:\\Users\\Eron\\Desktop\\CRUDArvoreAVL\\Trabalho\\BDAlunos10e1v1.txt", "r");
-	char str[1000]; // "str" receberá cada linha do arquivo e será fragmentada para um array de strings.
+	FILE *fp = fopen("C:\\Users\\Eron\\Desktop\\CRUDArvoreAVL\\Trabalho\\alunos_salvos.txt", "r");
+	char str[100]; // "str" receberá cada linha do arquivo e será fragmentada para um array de strings.
 	char **dados; // "dados" guardará o array de strings da fragmentação de "str"
-	int i = 0;
 	Aluno *aluno;
 
     if (fp == NULL)
@@ -205,7 +242,7 @@ void carregar_arvore(Arvore *arv)
     }
 
     printf("\n\tCARREGANDO! \n\t"
-    "Aguarde um momento... \n");
+            "Aguarde um momento... \n");
 
     clock_t c0 = clock();
 
@@ -221,17 +258,14 @@ void carregar_arvore(Arvore *arv)
 
 		// o segundo parametro transforma a string de matricula para inteiro e usa como chave
 		inserir(arv, atoi(dados[1]), aluno);
-
-        for (i = 0; i < 4; i++)
-            free(dados[i]);
         free(dados);
 	}
 
     clock_t c1 = clock();
 
-    double timestamp = (c1 - c0) * 1000 / CLOCKS_PER_SEC;
+    double time_stamp = (c1 - c0) * 1000 / CLOCKS_PER_SEC;
 
-    printf("\t%.0lfms para inclusao dos dados na arvore. \n", timestamp);
+    printf("\t%.0lfms para inclusao dos dados na arvore. \n", time_stamp);
 
     printf("\tAltura da arvore: %d \n\t", altura(arv));
 
@@ -243,33 +277,35 @@ void carregar_arvore(Arvore *arv)
 // OK // OPÇÃO 2 DO MENU
 void cadastrar_aluno(Arvore *arv)
 {
-	Aluno *aluno;
-    int matricula = maior_chave(arv) + 1;
-	char *nova_matricula = int_to_string(matricula);
-	char nome[50], telefone[10], email[50];
-
 	// DEVERIAM HAVER REGRAS PARA CRIAÇÃO DE NOME, EMAIL E TELEFONE,
 	// PORÉM COMO NÃO É O INTUITO DO TRABALHO, NÃO CRIEI ESSAS REGRAS.
-	fflush(stdin);
+
+	Aluno *aluno = criar_aluno();
+    int matricula = maior_chave(arv) + 1;
+    matricula = (matricula == 0 ? 1 : matricula);
+	char *novo = int_to_string(matricula);
+
+	set_matricula_aluno(aluno, novo);
+
+	novo = (char*) malloc(50 * sizeof(char));
+	novo[0] = '\0';
 	printf("\tNome: ");
-	fgets(nome, sizeof nome, stdin);
+	fgets(novo, 50, stdin);
     fflush(stdin);
-    nome[strlen(nome) -1] = '\0';
+    novo[strlen(novo) - 1] = '\0';
+    set_nome_aluno(aluno, novo);
 
+	novo = (char*) malloc(30 * sizeof(char));
 	printf("\tE-mail: ");
-	scanf("%s", email);
+	scanf("%s", novo);
     fflush(stdin);
+	set_email_aluno(aluno, novo);
 
+    novo = (char*) malloc(20 * sizeof(char));
 	printf("\tTelefone: ");
-	scanf("%s", telefone);
+	scanf("%s", novo);
     fflush(stdin);
-
-	aluno = criar_aluno();
-	set_matricula_aluno(aluno, nova_matricula);
-	set_nome_aluno(aluno, nome);
-	set_email_aluno(aluno, email);
-	set_telefone_aluno(aluno, telefone);
-	free(nova_matricula);
+	set_telefone_aluno(aluno, novo);
 
 	inserir(arv, matricula, aluno);
     printf("\tAluno cadastrado com sucesso! \n");
@@ -289,8 +325,8 @@ void listar_alunos_da_arvore(Arvore *arv)
         clock_t c0 = clock();
         imprimir_in_ordem(arv);
         clock_t c1 = clock();
-        double timestamp = (c1 - c0) * 1000 / CLOCKS_PER_SEC;
-        printf("\t%.0lfms para listar os alunos da arvore. \n", timestamp);
+        double time_stamp = (c1 - c0) * 1000 / CLOCKS_PER_SEC;
+        printf("\t%.0lfms para listar os alunos da arvore. \n", time_stamp);
     }
 
     getch();
@@ -300,93 +336,60 @@ void listar_alunos_da_arvore(Arvore *arv)
 // OK // OPÇÃO 4 DO MENU
 void listar_alunos_do_arquivo(Arvore *arv)
 {
-	// pra facilitar nossa vida ao alterar os arquivos de pesquisa.
-	int arquivo;
-	char fileName[200];
-	char Path[100] = "C:\\Users\\Eron\\Desktop\\CRUDArvoreAVL\\Trabalho\\";
-
-	printf("\tEscolha o numero do arquivo (quantidade de alunos): \n\t"
-        "1) 10 alunos \n\t"
-        "2) 100 alunos \n\t"
-        "3) 1mil alunos \n\t"
-        "4) 10mil alunos \n\t"
-        "5) 100mil alunos \n\t"
-        "6) 1milhao alunos \n\t"
-        ">> ");
-	scanf("%d", &arquivo);
-	fflush(stdin);
-
-	while(arquivo < 1 || arquivo > 6) {
-		printf("Escolha uma opcao valido: \n\t");
-		printf(">> ");
-		scanf("%d", &arquivo);
-		fflush(stdin);
-	}
-
-	switch(arquivo){
-		case 1:
-            strcpy(fileName,"PesqAlunos10e1.txt\0");
-            break;
-		case 2:
-            strcpy(fileName,"PesqAlunos10e2.txt\0");
-            break;
-		case 3:
-            strcpy(fileName,"PesqAlunos10e3.txt\0");
-            break;
-		case 4:
-            strcpy(fileName,"PesqAlunos10e4.txt\0");
-            break;
-		case 5:
-            strcpy(fileName,"PesqAlunos10e5.txt\0");
-            break;
-		case 6:
-            strcpy(fileName,"PesqAlunos10e6.txt\0");
-            break;
-		default:
-		    printf("Erro no switch do arquivo!\n");
-	}
-
-	printf("\tListando alunos pelo arquivo %s... \n", fileName);
-
-    FILE *fp = fopen(strcat(Path,fileName), "r");
-
+	char *path = get_caminho_do_arquivo();
+    FILE *fp = fopen(path, "r");
 	char str[20]; // "str" receberá cada linha do arquivo.
-    int matricula; // "matricula" receberá o valor de "str" em formato inteiro.
+    //int matricula; // "matricula" receberá o valor de "str" em formato inteiro.
     Aluno *aluno;
+
+	printf("\tListando alunos pelo arquivo de caminho: \n"
+            "%s \n", path);
 
     printf("\n \tNome \t\tMatricula \tE-mail \t\t\tTelefone \n\n");
 
+    clock_t c0 = clock();
+
     while (fgets(str, sizeof str, fp) != NULL)
 	{
-		matricula = atoi(str);
+		aluno = buscar(arv, atoi(str));
 
-		aluno = buscar(arv, matricula);
+		if(aluno != NULL)
+            printf("\t%s \t%s \t%s \t%s \n", get_nome_aluno(aluno), get_matricula_aluno(aluno), get_email_aluno(aluno), get_telefone_aluno(aluno));
 
+		/*
+		// FOI TIRADO O ELSE PARA DEIXAR A IMPRESSÃO MAIS RÁPIDA.
 		if(aluno != NULL)
             printf("\t%s \t%s \t%s \t%s \n", get_matricula_aluno(aluno), get_nome_aluno(aluno), get_email_aluno(aluno), get_telefone_aluno(aluno));
         else
-            printf("\tAluno de matricula de matricula \"%d\" não encontrado! \n", matricula);
+            printf("\tAluno de matricula de matricula \"%d\" não encontrado! \n", matricula); // matricula = atoi(str);
+        */
 	}
+
+	clock_t c1 = clock();
+	double time_stamp = (c1 - c0) * 1000 / CLOCKS_PER_SEC;
+	printf("\t%.0lfms para listagem dos dados da arvore. \n", time_stamp);
+
+	free(path);
 	getch();
 	fflush(stdin);
 }
 
-// !OK // OPÇÃO 5 DO MENU // PRECISA CORRIGIR
+// OK // OPÇÃO 5 DO MENU
 void pesquisar_aluno(Arvore *arv)
 {
 	Aluno *aluno = NULL;
 	char **dados = NULL;
 
  	int matricula;
-	printf("\tQual a matricula do aluno? \n\t");
-	printf(">> ");
+	printf("\tQual a matricula do aluno? \n\t"
+            ">> ");
 	scanf("%d", &matricula);
 	fflush(stdin);
 
     while (matricula < 1)
     {
-        printf("\tInsira uma matricula valida: \n\t");
-        printf(">> ");
+        printf("\tInsira uma matricula valida: \n\t"
+                ">> ");
         scanf("%d", &matricula);
         fflush(stdin);
     }
@@ -399,9 +402,9 @@ void pesquisar_aluno(Arvore *arv)
     {
         dados = get_dados_aluno(aluno);
         printf("\n\tMatricula: %s \n\t"
-        "Nome: %s \n\t"
-        "E-mail: %s \n\t"
-        "Telefone: %s \n", dados[0], dados[1], dados[2], dados[3]);
+                "Nome: %s \n\t"
+                "E-mail: %s \n\t"
+                "Telefone: %s \n", dados[0], dados[1], dados[2], dados[3]);
         free(dados);
     }
 
@@ -413,17 +416,17 @@ void pesquisar_aluno(Arvore *arv)
 void alterar_aluno(Arvore *arv)
 {
     Aluno *aluno = NULL;
-
  	int matricula;
-	printf("\tQual a matricula do aluno que sera alterado? \n\t");
-	printf(">> ");
+
+	printf("\tQual a matricula do aluno que sera alterado? \n\t"
+            ">> ");
 	scanf("%d", &matricula);
 	fflush(stdin);
 
     while (matricula < 1)
     {
-        printf("\tInsira uma matricula valida: \n\t");
-        printf(">> ");
+        printf("\tInsira uma matricula valida: \n\t"
+                ">> ");
         scanf("%d", &matricula);
         fflush(stdin);
     }
@@ -446,15 +449,15 @@ void remover_aluno(Arvore *arv)
 {
     int matricula;
 
-    printf("\tMatricula: \n\t");
-    printf(">> ");
+    printf("\tMatricula: \n\t"
+            ">> ");
     scanf("%d", &matricula);
 	fflush(stdin);
 
 	while (matricula < 1)
 	{
-		printf("\tDigite uma matricula valida! \n\t");
-		printf(">> ");
+		printf("\tDigite uma matricula valida! \n\t"
+                ">> ");
 		scanf("%d", &matricula);
 		fflush(stdin);
 	}
@@ -468,78 +471,41 @@ void remover_aluno(Arvore *arv)
     fflush(stdin);
 }
 
-// OPÇÃO 8 DO MENU
+// OK // OPÇÃO 8 DO MENU
 void remover_alunos_por_arquivo(Arvore *arv)
 {
-    // LER ARQUIVO E REMOVER OS ALUNOS
-
-	int opcao;
-	char *path = (char*) malloc(128 * sizeof(char));
-
-	path[0] = '\0';
-	path = strcat(path, "C:\\Users\\Eron\\Desktop\\CRUDArvoreAVL\\Trabalho\\");
-
-	printf("\tEscolha o numero do arquivo: \n\t"
-        "1) 10 alunos \n\t"
-        "2) 100 alunos \n\t"
-        "3) 1mil alunos \n\t"
-        "4) 10mil alunos \n\t"
-        "5) 100mil alunos \n\t"
-        "6) 1milhao alunos \n\t"
-        ">> ");
-	scanf("%d", &opcao);
-	fflush(stdin);
-
-	while(opcao < 1 || opcao > 6) {
-		printf("Escolha uma opcao valida: \n\t");
-		printf(">> ");
-		scanf("%d", &opcao);
-		fflush(stdin);
-	}
-
-	switch(opcao){
-		case 1:
-		    path = strcat(path,"PesqAlunos10e1.txt\0");
-            break;
-		case 2:
-            path = strcat(path,"PesqAlunos10e2.txt\0");
-            break;
-		case 3:
-            path = strcat(path,"PesqAlunos10e3.txt\0");
-            break;
-		case 4:
-            path = strcat(path,"PesqAlunos10e4.txt\0");
-            break;
-		case 5:
-            path = strcat(path,"PesqAlunos10e5.txt\0");
-            break;
-		case 6:
-            path = strcat(path,"PesqAlunos10e6.txt\0");
-            break;
-		default:
-		    printf("Erro no switch da funcao remover_alunos_por_arquivo!\n");
-		    getch();
-	}
-
-	printf("\tRemovendo alunos com base nos dados do arquivo de caminho: \n"
-            "%s... \n", path);
-
+	char *path = get_caminho_do_arquivo();
     FILE *fp = fopen(path, "r");
 	char str[20]; // "str" receberá cada linha do arquivo.
-	int matricula;
+	//int matricula;
 
-    printf("\n \tNome \t\tMatricula \tE-mail \t\t\tTelefone \n\n");
+	if (fp == NULL)
+    {
+        printf("Erro ao abrir o arquivo %s!", path);
+        return;
+    }
 
+	printf("\tRemovendo alunos pelo arquivo de caminho: \n\t"
+            "%s... \n", path);
+
+    clock_t c0 = clock();
     while (fgets(str, sizeof str, fp) != NULL)
 	{
-	    matricula = atoi(str);
-
+	    remover(arv, atoi(str));
+	    /*
+	    // FOI TIRADO O ELSE PARA DEIXAR A IMPRESSÃO MAIS RÁPIDA.
 		if (remover(arv, matricula))
-            printf("\tAluno de matricula \"%d\" removido! \n", matricula);
+            printf("\tAluno de matricula \"%d\" removido! \n", matricula); // matricula = atoi(str);
         else
-            printf("\tAluno de matricula \"%d\" nao existe na arvore! \n", matricula);
+            printf("\tAluno de matricula \"%d\" nao existe na arvore! \n", matricula); // matricula = atoi(str);
+        */
 	}
+	clock_t c1 = clock();
 
+	double time_stamp = (c1 - c0) * 1000 / CLOCKS_PER_SEC;
+    printf("\t%.0lfms para remocao dos dados na arvore. \n", time_stamp);
+
+	free(path);
     getch();
     fflush(stdin);
 }
@@ -547,8 +513,24 @@ void remover_alunos_por_arquivo(Arvore *arv)
 // OPÇÃO 9 DO MENU
 void remover_todos_os_alunos(Arvore **arv)
 {
+    int min, max;
+
+    clock_t c0 = clock();
+
+    for (min = menor_chave(*arv), max = maior_chave(*arv); min <= max; min++)
+        remover(*arv, min);
+
+    clock_t c1 = clock();
+
+    double time_stamp = (c1 - c0) * 1000 / CLOCKS_PER_SEC;
+
+    printf("\t%.0lfms para remocao dos dados na arvore. \n", time_stamp);
+
+    /*
     destruir(*arv);
     *arv = criar();
+    */
+
     getch();
     fflush(stdin);
 }
@@ -558,27 +540,27 @@ void salvar(Arvore *arv)
 {
 	FILE *fp = fopen("C:\\Users\\Eron\\Desktop\\CRUDArvoreAVL\\Trabalho\\alunos_salvos.txt", "w");
 	char *str;
-	int key, max_key;
+	int min, max;
 	Aluno *aluno;
 
-    key = menor_chave(arv);
-	max_key = maior_chave(arv);
-
 	// NÃO SEI PORQUE, MAS O LOOP SÓ ESCREVE NO ARQUIVO SE FOR ADICIONADO ALGUM CARACTERE ANTES.
-	fprintf(fp, "\n");
+	//fprintf(fp, "\n");
 
     // ESTE FOR NÃO É EFICIENTE SE A DIFERENÇA DE VALORES DE CHAVE FOR MUITO GRANDE.
-	while (key <= max_key)
+    clock_t c0 = clock();
+	for (min = menor_chave(arv), max = maior_chave(arv); min <= max; min++)
 	{
-	    aluno = buscar(arv, key);
+	    aluno = buscar(arv, min);
 
 	    if (aluno != NULL)
 	    {
 	        str = aluno_to_string(aluno);
 	        fprintf(fp, str);
         }
-        key++;
 	}
+	clock_t c1 = clock();
+	double time_stamp = (c1 - c0) * 1000 / CLOCKS_PER_SEC;
+    printf("\t%.0lfms para salvar os dados da arvore em arquivo. \n", time_stamp);
 
 	fclose(fp);
 
@@ -595,28 +577,27 @@ int menu(Arvore *arv)
 	int opcao;
 
 	printf(" \n\t"
-		"CRUD usando Arvore \n\n\t"
-		"Selecione o que deseja fazer \n\t"
-		"1 - Carregar Alunos para memoria \n\t" // carregar_arvore(Arvore *arv)
-		"2 - Cadastrar novo Aluno na base de dados \n\t" // novoAluno(Arvore *arv)
-		"3 - Listar Alunos por ordem de matricula \n\t" // listar_alunos_da_arvore(Arvore *arv)
-		"4 - Listar Alunos por arquivo \n\t" // listar_alunos_do_arquivo(Arvore *arv)
-		"5 - Consultar Aluno \n\t" // pesquisar_aluno();
-		"6 - Alterar Aluno \n\t" //
-		"7 - Remover Aluno \n\t" //
-		"8 - Remover Alunos por arquivo \n\t" //
-		"9 - Remover todos alunos \n\t" //
-		"10 - Salvar alteracoes \n\t"
-		"11 - Sair \n\t"); //
-
-	printf(">> ");
+            "CRUD usando Arvore \n\n\t"
+            "Selecione o que deseja fazer \n\t"
+            "1 - Carregar Alunos para memoria \n\t" // carregar_arvore(Arvore *arv)
+            "2 - Cadastrar novo Aluno na base de dados \n\t" // novoAluno(Arvore *arv)
+            "3 - Listar Alunos por ordem de matricula \n\t" // listar_alunos_da_arvore(Arvore *arv)
+            "4 - Listar Alunos por arquivo \n\t" // listar_alunos_do_arquivo(Arvore *arv)
+            "5 - Consultar Aluno \n\t" // pesquisar_aluno();
+            "6 - Alterar Aluno \n\t" //
+            "7 - Remover Aluno \n\t" //
+            "8 - Remover Alunos por arquivo \n\t" //
+            "9 - Remover todos alunos \n\t" //
+            "10 - Salvar alteracoes \n\t"
+            "11 - Sair \n\t"
+            ">> ");
 	scanf("%d", &opcao);
 	fflush(stdin);
 
 	while (opcao > 11 || opcao < 1)
 	{
-		printf("\tSelecione uma opcao valida! \n\t");
-		printf(">> ");
+		printf("\tSelecione uma opcao valida! \n\t"
+                ">> ");
 		scanf("%d", &opcao);
 		fflush(stdin);
 	}
@@ -656,7 +637,7 @@ int menu(Arvore *arv)
         case 11:
             return 0;
 		default:
-			printf("\n\tERRO NA ESTRUTURA DE SWITCH DO MENU \n\n");
+			printf("\n\tERRO NA ESTRUTURA DO SWITCH (menu) \n\n");
 			break;
 	}
 	return 1;
