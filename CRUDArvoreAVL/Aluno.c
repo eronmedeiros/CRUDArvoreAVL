@@ -27,6 +27,17 @@ Aluno *criar_aluno()
 }
 
 // OK
+Aluno *criar_aluno_com_dados(char *matricula, char *nome, char *email, char *telefone)
+{
+    Aluno *a = (Aluno*) malloc(sizeof(Aluno));
+    a->matricula = matricula;
+    a->nome = nome;
+    a->email = email;
+    a->telefone = telefone;
+    return a;
+}
+
+// OK
 void destruir_aluno(Aluno *aluno)
 {
     free(aluno->matricula);
