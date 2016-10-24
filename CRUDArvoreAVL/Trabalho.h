@@ -4,7 +4,8 @@
 #include "Arvore.h"
 #include "Aluno.h"
 
-char* int_to_string(int matricula);
+char* int_to_string(long long int matricula);
+long long int string_to_int(char *str);
 char** recuperar_dados(char *str);
 char* aluno_to_string(Aluno* aluno);
 void novos_dados_do_aluno(Aluno *aluno);
@@ -20,4 +21,4 @@ void remover_todos_os_alunos(Arvore **arv);
 void salvar(Arvore *arv);
 int menu(Arvore *arv);
 
-#endif // !TRABALHO_H
+#endif // TRABALHO_H

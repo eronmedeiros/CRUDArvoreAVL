@@ -1,12 +1,9 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "Aluno.h"
 
-// TODOS AS FUNÇÕES "SET" ALOCARÃO MEMÓRIA E COPIARÃO OS DADOS PASSADOS POR PARÂMETRO PARA O DEVIDO CAMPO DO ALUNO.
-// NENHUMA DAS FUNÇÕES "GET" FARÁ CÓPIA DOS DADOS. ELAS RETORNARÃO PONTEIROS PARA OS PRÓPRIOS DADOS DO ALUNO.
+// TODOS AS FUNÇÕES "SET" NÃO ALOCARÃO MEMÓRIA. APENAS APONTARÃO PARA OS DADOS PASSADOS POR PARÂMETRO.
+// NENHUMA DAS FUNÇÕES "GET" FARÁ CÓPIA DOS DADOS DO ALUNO. APENAS RETORNARÃO PONTEIROS PARA OS MESMOS.
 
-// OK
 struct aluno
 {
     char *matricula;
@@ -15,7 +12,6 @@ struct aluno
     char *telefone;
 };
 
-// OK
 Aluno *criar_aluno()
 {
     Aluno *a = (Aluno*) malloc(sizeof(Aluno));
@@ -26,7 +22,6 @@ Aluno *criar_aluno()
     return a;
 }
 
-// OK
 Aluno *criar_aluno_com_dados(char *matricula, char *nome, char *email, char *telefone)
 {
     Aluno *a = (Aluno*) malloc(sizeof(Aluno));
@@ -37,7 +32,6 @@ Aluno *criar_aluno_com_dados(char *matricula, char *nome, char *email, char *tel
     return a;
 }
 
-// OK
 void destruir_aluno(Aluno *aluno)
 {
     free(aluno->matricula);
@@ -47,74 +41,54 @@ void destruir_aluno(Aluno *aluno)
     free(aluno);
 }
 
-// OK
 void set_matricula_aluno(Aluno *aluno, char *matricula)
 {
     aluno->matricula = matricula;
 }
 
-// OK
 char* get_matricula_aluno(Aluno *aluno)
 {
     return aluno->matricula;
 }
 
-// OK
 void set_nome_aluno(Aluno *aluno, char *nome)
 {
     aluno->nome = nome;
 }
 
-// OK
 char* get_nome_aluno(Aluno *aluno)
 {
     return aluno->nome;
 }
 
-// OK
 void set_email_aluno(Aluno *aluno, char *email)
 {
     aluno->email = email;
 }
 
-// OK
 char* get_email_aluno(Aluno *aluno)
 {
 	return aluno->email;
 }
 
-// OK
 void set_telefone_aluno(Aluno *aluno, char *telefone)
 {
     aluno->telefone = telefone;
 }
 
-// OK
 char* get_telefone_aluno(Aluno *aluno)
 {
 	return aluno->telefone;
 }
 
-// OK
 char** get_dados_aluno(Aluno *aluno)
 {
     char **dados = (char**) malloc(4 * sizeof(char*));
 
-    dados[0] = aluno->nome;
-    dados[1] = aluno->matricula;
+    dados[0] = aluno->matricula;
+    dados[1] = aluno->nome;
     dados[2] = aluno->email;
     dados[3] = aluno->telefone;
 
     return dados;
 }
-
-
-
-
-
-
-
-
-
-
-
